@@ -7,6 +7,9 @@ var session = require('express-session');
 const app = express();
 const port = 8000;
 
+var validator = require('validator');
+const expressSanitizer = require('express-sanitizer');
+
 // Tell Express that we want to use EJS as the templating engine
 app.set("view engine", "ejs");
 
@@ -15,6 +18,8 @@ app.use(express.urlencoded({ extended: true }));
 
 // Set up public folder (for css and statis js)
 app.use(express.static(__dirname + "/public"));
+
+app.use(expressSanitizer());
 
 // Middleware
 app.use(express.json());
@@ -29,16 +34,6 @@ app.get('/test', async (req, res) => {
         res.status(500).json({ error: 'Database error' });
     }
 });
-// app.get('/users', async (req, res) => {
-//     try {
-//         // Query to select all users from the 'public' schema
-//         const result = await pool.query('SELECT * FROM public.users');
-//         res.json(result.rows); // Send data from users table
-//     } catch (err) {
-//         console.error('Error fetching users:', err.message);
-//         res.status(500).send('Database query failed');
-//     }
-// });
 
 app.get('/', (req, res) => {
     res.send('Hello World!');
