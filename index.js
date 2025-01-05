@@ -42,6 +42,9 @@ app.get('/', (req, res) => {
 const usersRouter = require('./routes/users');
 app.use('/users', usersRouter);
 
+const menuRouter = require('./routes/menu');
+app.use('/menu', menuRouter);
+
 // Start the server
 const PORT = 8000;
 app.listen(port, () => console.log(`Node app listening on port ${port}!`));

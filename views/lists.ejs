@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Food & Drinks</title>
+</head>
+<body>
+  <h1>Food and Drinks</h1>
+
+  <h2>Food</h2>
+  <ul>
+    <% food.forEach(item => { %>
+      <li>
+        <strong><%= item.name %></strong> - $<%= item.price %> <br>
+        Ingredients: <%= item.ingredients %> <br>
+        Allergens: <%= item.allergens.join(', ') %>
+      </li>
+    <% }) %>
+  </ul>
+
+  <h2>Drinks</h2>
+  <ul>
+    <% drinks.forEach(item => { %>
+      <li>
+        <strong><%= item.name %></strong> - $<%= item.price %> <br>
+        Ingredients: <%= item.ingredients %> <br>
+        Allergens: <%= item.allergens.join(', ') %>
+      </li>
+    <% }) %>
+  </ul>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Food & Drinks</title>
+</head>
+<body>
+    <h1>Edit Food and Drinks</h1>
+    
+    <h2>Food</h2>
+    <ul>
+        <% food.forEach(item => { %>
+        <li>
+          <strong><%= item.name %></strong> - $<%= item.price %> <br>
+          Ingredients: <%= item.ingredients %> <br>
+          Allergens: <%= item.allergens && item.allergens.length > 0 ? item.allergens.join(', ') : 'None' %>
+          <form action="editted" method="POST">
+            <input type="text" name="name" placeholder="Name" required>
+            <input type="number" name="price" placeholder="Price" required>
+            <input type="text" name="ingredients" placeholder="Ingredients" required>
+            <input type="text" name="allergens" placeholder="Allergens" required>
+            <button type="submit">Edit</button>
+          </form>
+        </li>
+        <% }) %>
+      </ul>
+    
+    <h2>Drinks</h2>
+    <ul>
+        <% drink.forEach(item => { %>
+        <li>
+          <strong><%= item.name %></strong> - $<%= item.price %> <br>
+          Ingredients: <%= item.ingredients %> <br>
+          Allergens: <%= item.allergens && item.allergens.length > 0 ? item.allergens.join(', ') : 'None' %>
+          <form action="editted" method="POST">
+            <input type="text" name="name" placeholder="Name" required>
+            <input type="float" name="price" placeholder="Price" required>
+            <input type="text" name="ingredients" placeholder="Ingredients" required>
+            <input type="text" name="allergens" placeholder="Allergens" required>
+            <button type="submit">Edit</button>
+          </form>
+        </li>
+        <% }) %>
+      </ul>
+</html>
