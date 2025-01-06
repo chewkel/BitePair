@@ -16,6 +16,7 @@
           Ingredients: <%= item.ingredients %> <br>
           Allergens: <%= item.allergens && item.allergens.length > 0 ? item.allergens.join(', ') : 'None' %>
           <form action="editted" method="POST">
+            <input type="hidden" name="category" value="food">
             <input type="text" name="name" placeholder="Name" required>
             <input type="number" name="price" placeholder="Price" required>
             <input type="text" name="ingredients" placeholder="Ingredients" required>
@@ -34,6 +35,7 @@
           Ingredients: <%= item.ingredients %> <br>
           Allergens: <%= item.allergens && item.allergens.length > 0 ? item.allergens.join(', ') : 'None' %>
           <form action="editted" method="POST">
+            <input type="hidden" name="category" value="drink">
             <input type="text" name="name" placeholder="Name" required>
             <input type="float" name="price" placeholder="Price" required>
             <input type="text" name="ingredients" placeholder="Ingredients" required>

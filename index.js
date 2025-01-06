@@ -3,7 +3,6 @@ const pool = require('./db'); // Import the PostgreSQL pool
 const router = express();
 var ejs = require('ejs');
 var session = require('express-session');
-
 const app = express();
 const port = 8000;
 
@@ -20,6 +19,17 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(__dirname + "/public"));
 
 app.use(expressSanitizer());
+
+app.use(
+    session({
+        secret: "somerandomstuff",
+        resave: false,
+        saveUninitialized: false,
+        cookie: {
+            expires: 600000,
+        },
+    })
+);
 
 // Middleware
 app.use(express.json());

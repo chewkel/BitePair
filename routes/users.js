@@ -6,15 +6,22 @@ const saltRounds = 10;
 
 const redirectLogin = (req, res, next) => {
     if (!req.session.userId) {
-        res.redirect("./login");
+        res.redirect('./login') // redirect to the login page
+        console.log(req.session.userId);
     } else {
-        next();
+        next(); // move to the next middleware function
     }
-};
+}
+
 
 const { check, validationResult } = require("express-validator");
 const { get } = require("request");
 // const { render } = require("pug");
+
+router.get("/", function (req, res, next) {
+    res.render("index.ejs");
+});
+
 
 router.get('/users', async (req, res) => {
     try {
@@ -76,7 +83,9 @@ router.post("/loggedin", async (req, res) => {
         if (user.rows.length > 0) {
             bcrypt.compare(password, user.rows[0].hashedpassword, (err, result) => {
                 if (result) {
+                    req.session.userId = username;
                     res.send("Login successful! <a href=" + "../" + ">Home</a>");
+                    console.log(req.session.userId);
                 } else {
                     res.send("Incorrect password");
                 }
@@ -96,7 +105,7 @@ router.get("/logout", (req, res) => {
             return res.redirect("./");
         }
         res.clearCookie("sid");
-        res.redirect("./");
+        res.redirect("../");
     });
 });
 
@@ -104,15 +113,133 @@ router.get("/profile", redirectLogin, (req, res) => {
     res.send("Profile page");
 });
 
-router.get("edit", redirectLogin, (req, res) => {
-    const { userId } = req.session;
 
-    const user = pool.query('SELECT * FROM public.users WHERE id = $1', [userId]);
-    res.render("edit.ejs", { user });
-}
-);
+router.get("/edit", redirectLogin, async (req, res) => {
+    // edit user, get user data from db
+    try {
+        const user = await pool.query('SELECT * FROM public.users WHERE username = $1', [req.session.userId]);
+        // console.log(user.rows);
+        res.render("edit_user.ejs", { user: user.rows });
+    } catch (err) {
+        console.error('Error fetching user:', err.message);
+        res.status(500).send('Database query failed');
+    }
+});
+// router.post("/editted", redirectLogin, (req, res, next) => {
+//     let username = req.sanitize(req.body.username);
+//     let email = req.sanitize(req.body.email);
+//     let password = req.sanitize(req.body.password);
+//     let current = req.sanitize(req.body.current);
 
+//     let sqlquery = "SELECT hashedPassword FROM users WHERE username = ?";
+//     db.query(sqlquery, [req.session.userId], (err, result) => {
+//       if (err) {
+//         return next(err);
+//       }
 
+//       if (result.length === 0) {
+//         return res.send("User not found <a href=" + "./edit" + ">Try again</a>");
+//       }
 
+//       let storedHashedPassword = result[0].hashedPassword;
 
+//       bcrypt.compare(current, storedHashedPassword, (err, isMatch) => {
+//         if (err) {
+//           return next(err);
+//         }
+
+//         if (!isMatch) {
+//           return res.send(
+//             "Current password is incorrect <a href=" + "./edit" + ">Try again</a>"
+//           );
+//         }
+
+//         let checkQuery =
+//           "SELECT * FROM users WHERE (username = ? OR email = ?) AND username != ?";
+//         db.query(
+//           checkQuery,
+//           [username, email, req.session.userId],
+//           (err, result) => {
+//             if (err) {
+//               return next(err);
+//             }
+
+//             if (result.length > 0) {
+//               return res.send(
+//                 "Username or email is already taken <a href=" +
+//                 "./edit" +
+//                 ">Try again</a>"
+//               );
+//             }
+
+//             bcrypt.hash(password, saltRounds, (err, hashedPassword) => {
+//               if (err) {
+//                 return next(err);
+//               }
+
+//               let updateQuery =
+//                 "UPDATE users SET username = ?, email = ?, hashedPassword = ? WHERE username = ?";
+//               db.query(
+//                 updateQuery,
+//                 [username, email, hashedPassword, req.session.userId],
+//                 (err, result) => {
+//                   if (err) {
+//                     return next(err);
+//                   }
+
+//                   let updateRecipeQuery =
+//                     "UPDATE recipes SET user_id = ? WHERE user_id = ?";
+//                   db.query(
+//                     updateRecipeQuery,
+//                     [username, req.session.userId],
+//                     (err, result) => {
+//                       if (err) {
+//                         return next(err);
+//                       }
+//                       req.session.userId = username;
+//                       res.send(
+//                         "User updated successfully! <a href=" +
+//                         "../" +
+//                         ">Home</a>"
+//                       );
+//                     }
+//                   );
+//                 }
+//               );
+//             });
+//           }
+//         );
+//       });
+//     });
+//   });
+
+router.post("/editted", redirectLogin, async (req, res) => {
+    let username = req.sanitize(req.body.username);
+    let email = req.sanitize(req.body.email);
+    let password = req.sanitize(req.body.password);
+    let current = req.sanitize(req.body.current);
+
+    try {
+        const user = await pool.query('SELECT * FROM public.users WHERE username = $1', [req.session.userId]);
+        bcrypt.compare(current, user.rows[0].hashedpassword, async (err, result) => {
+            if (result) {
+                const user = await pool.query('SELECT * FROM public.users WHERE username = $1', [username]);
+                if (user.rows.length > 0) {
+                    res.send("Username already exists");
+                } else {
+                    bcrypt.hash(password, saltRounds, async (err, hashedPassword) => {
+                        const newUser = await pool.query('UPDATE public.users SET username = $1, email = $2, hashedPassword = $3 WHERE username = $4', [username, email, hashedPassword, req.session.userId]);
+                        req.session.userId = username;
+                        res.send("User updated successfully! <a href=" + "../" + ">Home</a>");
+                    });
+                }
+            } else {
+                res.send("Incorrect password");
+            }
+        });
+    } catch (err) {
+        console.error('Error updating user:', err.message);
+        res.status(500).send('Database query failed');
+    }
+});
 module.exports = router;

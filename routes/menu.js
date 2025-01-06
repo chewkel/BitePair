@@ -27,6 +27,44 @@ router.get('/drinks', async (req, res) => {
     res.json(result.rows);
 });
 
+router.get("/lists", async (req, res) => {
+    try {
+        const foodQuery = `
+            SELECT 
+                f.id, f.name, f.ingredients, f.price, 
+                ARRAY_AGG(a.name) AS allergens
+            FROM food f
+            LEFT JOIN food_allergen fa ON f.id = fa.food_id
+            LEFT JOIN allergen a ON fa.allergen_id = a.id
+            GROUP BY f.id
+        `;
+        const food = await pool.query(foodQuery);
+
+        const drinkQuery = `
+            SELECT 
+                d.id, d.name, d.ingredients, d.price, 
+                ARRAY_AGG(a.name) AS allergens
+            FROM drinks d
+            LEFT JOIN drink_allergen da ON d.id = da.drink_id
+            LEFT JOIN allergen a ON da.allergen_id = a.id
+            GROUP BY d.id
+        `;
+        const drink = await pool.query(drinkQuery);
+
+        res.render("lists.ejs", {
+            food: food.rows,
+            drink: drink.rows
+        });
+
+        // console.log(food.rows);
+        // console.log(drink.rows);
+
+    } catch (err) {
+        console.error("Error fetching data for lists page:", err);
+        res.status(500).send("Internal Server Error");
+    }
+});
+
 router.get("/edit", async (req, res) => {
     try {
         const foodQuery = `
@@ -59,9 +97,9 @@ router.get("/edit", async (req, res) => {
             allergen: allergen.rows
         });
 
-        console.log(food.rows);
-        console.log(drink.rows);
-        console.log(allergen.rows);
+        // console.log(food.rows);
+        // console.log(drink.rows);
+        // console.log(allergen.rows);
 
     } catch (err) {
         console.error("Error fetching data for edit page:", err);
@@ -69,23 +107,65 @@ router.get("/edit", async (req, res) => {
     }
 });
 
-router.post("/editted"), async (req, res) => {
+// editted page  
 
-    //   output its been editted and the current and the new change
-    res.send("It's been editted");
+router.post("/editted", async (req, res) => {
     console.log(req.body);
+    const { name, price, ingredients, allergens } = req.body;
 
-};
+    // Determine if it's food or drink from a hidden input or additional info
+    const category = req.body.category; // Should be sent as a hidden input in the form
+    const id = req.body.id; // Also send the item ID in the form as a hidden input
 
-router.get("/test"), async (req, res) => {
-    try {
-        const results = await pool.query('SELECT * FROM pg_catalog.pg_tables WHERE schemaname = \'public\'');
-        res.json(results.rows);
-    } catch (err) {
-        console.error(err.message);
-
-        res.status(500).json({ error: 'Database error' });
+    if (!id || !category) {
+        return res.status(400).send("Invalid request");
     }
-}
 
+    const tableName = category === "food" ? "food" : "drinks";
+    const allergenTable = category === "food" ? "food_allergen" : "drink_allergen";
+
+    try {
+        // Start a transaction
+        await pool.query("BEGIN");
+
+        // Update the food or drink details
+        await pool.query(
+            `UPDATE ${tableName} SET name = $1, price = $2, ingredients = $3 WHERE id = $4`,
+            [name, price, ingredients, id]
+        );
+
+        // Remove old allergen associations for the item
+        await pool.query(`DELETE FROM ${allergenTable} WHERE ${category}_id = $1`, [id]);
+
+        // Automatically detect allergens based on ingredients
+        const ingredientsArray = ingredients.split(",").map((ing) => ing.trim().toLowerCase());
+        const detectedAllergens = [];
+
+        const allergenResults = await pool.query("SELECT id, name FROM allergen");
+        allergenResults.rows.forEach((allergen) => {
+            if (ingredientsArray.includes(allergen.name.toLowerCase())) {
+                detectedAllergens.push(allergen.id);
+            }
+        });
+
+        // Insert new allergen associations
+        for (const allergenId of detectedAllergens) {
+            await pool.query(
+                `INSERT INTO ${allergenTable} (${category}_id, allergen_id) VALUES ($1, $2)`,
+                [id, allergenId]
+            );
+        }
+
+        // Commit the transaction
+        await pool.query("COMMIT");
+
+        // Redirect back to the edit page or elsewhere
+        // res.redirect("/menu/edit");
+        res.send("Item updated successfully! <a href=" + "./edit" + ">Edit</a>");
+    } catch (err) {
+        console.error("Error updating item:", err);
+        await pool.query("ROLLBACK");
+        res.status(500).send("Internal Server Error");
+    }
+});
 module.exports = router;

@@ -11,23 +11,23 @@
   <h2>Food</h2>
   <ul>
     <% food.forEach(item => { %>
-      <li>
-        <strong><%= item.name %></strong> - $<%= item.price %> <br>
-        Ingredients: <%= item.ingredients %> <br>
-        Allergens: <%= item.allergens.join(', ') %>
-      </li>
+    <li>
+      <strong><%= item.name %></strong> - $<%= item.price %> <br>
+      Ingredients: <%= item.ingredients %> <br>
+      Allergens: <%= item.allergens && item.allergens.length > 0 ? item.allergens.join(', ') : 'None' %>
+    </li>
     <% }) %>
+    
   </ul>
 
   <h2>Drinks</h2>
   <ul>
-    <% drinks.forEach(item => { %>
-      <li>
-        <strong><%= item.name %></strong> - $<%= item.price %> <br>
-        Ingredients: <%= item.ingredients %> <br>
-        Allergens: <%= item.allergens.join(', ') %>
-      </li>
+    <% drink.forEach(item => { %>
+    <li>
+      <strong><%= item.name %></strong> - $<%= item.price %> <br>
+      Ingredients: <%= item.ingredients %> <br>
+      Allergens: <%= item.allergens && item.allergens.length > 0 ? item.allergens.join(', ') : 'None' %>
+    </li>
     <% }) %>
-  </ul>
 </body>
 </html>
