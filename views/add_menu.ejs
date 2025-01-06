@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add Menu Item</title>
+</head>
+<body>
+  <h1>Add Menu Item</h1>
+  <form action="added" method="POST">
+    <label for="category">Category:</label>
+    <select name="category" id="category" required>
+      <option value="food">Food</option>
+      <option value="drinks">Drinks</option>
+    </select>
+
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name" placeholder="Item Name" required>
+
+    <label for="price">Price:</label>
+    <input type="number" id="price" name="price" step="0.01" placeholder="Item Price" required>
+
+    <label for="ingredients">Ingredients:</label>
+    <input type="text" id="ingredients" name="ingredients" placeholder="Comma-separated ingredients" required>
+
+    <button type="submit">Add Item</button>
+  </form>
+</body>
+</html>

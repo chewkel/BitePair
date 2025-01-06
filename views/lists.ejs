@@ -4,6 +4,43 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Food & Drinks</title>
+  <style>
+    /* Style for allergen symbols */
+    .allergen-symbol {
+      display: inline-block;
+      width: 24px;
+      height: 24px;
+      text-align: center;
+      line-height: 24px;
+      border-radius: 50%;
+      background-color: #f8d7da;
+      color: #721c24;
+      font-size: 12px;
+      font-weight: bold;
+      margin-right: 5px;
+      position: relative;
+      cursor: pointer;
+    }
+
+    /* Tooltip styling */
+    .allergen-symbol:hover .tooltip {
+      display: block;
+    }
+
+    .tooltip {
+      display: none;
+      position: absolute;
+      top: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #333;
+      color: #fff;
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+  </style>
 </head>
 <body>
   <h1>Food and Drinks</h1>
@@ -14,10 +51,21 @@
     <li>
       <strong><%= item.name %></strong> - $<%= item.price %> <br>
       Ingredients: <%= item.ingredients %> <br>
-      Allergens: <%= item.allergens && item.allergens.length > 0 ? item.allergens.join(', ') : 'None' %>
+      Allergens: 
+      <% if (item.allergens && item.allergens.length > 0) { %>
+        <% item.allergens.forEach(allergen => { %>
+          <% if (allergen) { %> <!-- Check if allergen is valid -->
+            <span class="allergen-symbol">
+              <%= allergen[0].toUpperCase() %> <!-- First letter of allergen -->
+              <span class="tooltip"><%= allergen %></span>
+            </span>
+          <% } %>
+        <% }) %>
+      <% } else { %>
+        None
+      <% } %>
     </li>
     <% }) %>
-    
   </ul>
 
   <h2>Drinks</h2>
@@ -26,8 +74,21 @@
     <li>
       <strong><%= item.name %></strong> - $<%= item.price %> <br>
       Ingredients: <%= item.ingredients %> <br>
-      Allergens: <%= item.allergens && item.allergens.length > 0 ? item.allergens.join(', ') : 'None' %>
+      Allergens: 
+      <% if (item.allergens && item.allergens.length > 0) { %>
+        <% item.allergens.forEach(allergen => { %>
+          <% if (allergen) { %> <!-- Check if allergen is valid -->
+            <span class="allergen-symbol">
+              <%= allergen[0].toUpperCase() %> <!-- First letter of allergen -->
+              <span class="tooltip"><%= allergen %></span>
+            </span>
+          <% } %>
+        <% }) %>
+      <% } else { %>
+        None
+      <% } %>
     </li>
     <% }) %>
+  </ul>
 </body>
 </html>
