@@ -3,29 +3,88 @@ const pool = require('../db');
 const { render } = require('ejs');
 const router = express.Router();
 
-router.get('/food', async (req, res) => {
-    const result = await pool.query(
-        `SELECT f.id, f.name, f.price, f.ingredients, 
-              COALESCE(array_agg(a.name) FILTER (WHERE a.name IS NOT NULL), '{}') AS allergens
-       FROM food f
-       LEFT JOIN food_allergen fa ON f.id = fa.food_id
-       LEFT JOIN allergen a ON fa.allergen_id = a.id
-       GROUP BY f.id`
-    );
-    res.render("food.ejs", { food: result.rows });
+// router.get('/food', async (req, res) => {
+//     const result = await pool.query(
+//         `SELECT f.id, f.name, f.price, f.ingredients, 
+//               COALESCE(array_agg(a.name) FILTER (WHERE a.name IS NOT NULL), '{}') AS allergens
+//        FROM food f
+//        LEFT JOIN food_allergen fa ON f.id = fa.food_id
+//        LEFT JOIN allergen a ON fa.allergen_id = a.id
+//        GROUP BY f.id`
+//     );
+//     res.render("food.ejs", { food: result.rows });
+// });
+
+router.get("/food", async (req, res) => {
+    try {
+        const foodQuery = `
+        SELECT 
+            f.id AS food_id, -- Explicitly alias the food table's id column
+            f.name,
+            f.ingredients,
+            f.price,
+            f.category,
+            ARRAY_AGG(a.name) AS allergens
+        FROM food f
+        LEFT JOIN food_allergen fa ON f.id = fa.food_id
+        LEFT JOIN allergen a ON fa.allergen_id = a.id
+        GROUP BY f.id, f.name, f.ingredients, f.price, f.category
+        ORDER BY f.category, f.name;
+    `;
+        const food = await pool.query(foodQuery);
+
+        // Group food by category
+        const groupedFood = food.rows.reduce((acc, item) => {
+            const category = item.category || "Uncategorized";
+            if (!acc[category]) {
+                acc[category] = [];
+            }
+            acc[category].push(item);
+            return acc;
+        }, {});
+        // Pass groupedFood to the template
+        res.render("food.ejs", { groupedFood });
+    } catch (err) {
+        console.error("Error fetching food menu:", err);
+        res.status(500).send("Internal Server Error");
+    }
 });
 
 router.get('/drinks', async (req, res) => {
-    const result = await pool.query(
-        `SELECT d.id, d.name, d.price, d.ingredients, 
-              COALESCE(array_agg(a.name) FILTER (WHERE a.name IS NOT NULL), '{}') AS allergens
-       FROM drinks d
-       LEFT JOIN drink_allergen da ON d.id = da.drink_id
-       LEFT JOIN allergen a ON da.allergen_id = a.id
-       GROUP BY d.id`
-    );
-    res.render("drinks.ejs", { drinks: result.rows });
-});
+    try {
+        const drinksQuery =
+            `SELECT
+            d.id AS drink_id,
+            d.name,
+            d.ingredients,
+            d.price,
+            d.category,
+            ARRAY_AGG(a.name) AS allergens
+        FROM drinks d
+        LEFT JOIN drink_allergen da ON d.id = da.drink_id
+        LEFT JOIN allergen a ON da.allergen_id = a.id
+        GROUP BY d.id, d.name, d.ingredients, d.price, d.category
+        ORDER BY d.category, d.name;
+    `;
+        const drinks = await pool.query(drinksQuery);
+
+        const groupedDrinks = drinks.rows.reduce((acc, item) => {
+            const category = item.category || "Uncategorized";
+            if (!acc[category]) {
+                acc[category] = [];
+            }
+            acc[category].push(item);
+            return acc;
+        }, {});
+
+        res.render("drinks.ejs", { groupedDrinks });
+    } catch (err) {
+        console.error("Error fetching drinks menu:", err);
+        res.status(500).send("Internal Server Error");
+    }
+}
+
+);
 
 router.get("/wines", async (req, res) => {
     try {
@@ -345,16 +404,44 @@ router.post("/editted", async (req, res) => {
 });
 
 router.get("/add", (req, res) => {
-    res.render("add_menu.ejs");
+    // Define subcategories for food and drinks
+    const subcategories = {
+        food: [
+            "Burgers & Sandwiches",
+            "Sides",
+            "Small Plates",
+            "Nibbles",
+            "To Share",
+            "Large Plates",
+            "Salads",
+            "Fries & Tatties"
+        ],
+        drinks: [
+            "Smoothies",
+            "Classics & Twists",
+            "Martinis",
+            "Spritzes",
+            "Zero-proofs",
+            "Bottled beers",
+            "Bottled ciders",
+            "Hot drinks",
+            "Fresh juices"
+        ]
+    };
+
+    // Pass the subcategories to the view
+    res.render("add_menu.ejs", { subcategories });
 });
 
 router.post("/added", async (req, res) => {
-    const { category, name, price, ingredients } = req.body;
+    const { category, subcategory, name, price, ingredients } = req.body;
 
-    if (!name || !price || !ingredients || !category) {
+    // Validate inputs
+    if (!name || !price || !ingredients || !category || !subcategory) {
         return res.status(400).send("All fields are required");
     }
 
+    // Determine table names based on category
     const tableName = category === "food" ? "food" : "drinks";
     const allergenTable = category === "food" ? "food_allergen" : "drink_allergen";
 
@@ -374,13 +461,15 @@ router.post("/added", async (req, res) => {
     try {
         await pool.query("BEGIN");
 
+        // Insert the new menu item with the subcategory
         const result = await pool.query(
-            `INSERT INTO ${tableName} (name, price, ingredients) VALUES ($1, $2, $3) RETURNING id`,
-            [name, price, ingredients]
+            `INSERT INTO ${tableName} (name, ingredients, price, category) VALUES ($1, $2, $3, $4) RETURNING id`,
+            [name, ingredients, price, subcategory]
         );
 
         const newItemId = result.rows[0].id;
 
+        // Process allergens
         const ingredientsArray = ingredients
             .toLowerCase()
             .split(/[,;]+/)
@@ -392,7 +481,6 @@ router.post("/added", async (req, res) => {
         allergenResults.rows.forEach((allergen) => {
             const allergenKeywords = allergenMapping[allergen.name.toLowerCase()];
             if (allergenKeywords) {
-
                 const hasAllergen = ingredientsArray.some((ingredient) =>
                     allergenKeywords.some((keyword) => ingredient.includes(keyword))
                 );
@@ -402,6 +490,7 @@ router.post("/added", async (req, res) => {
             }
         });
 
+        // Insert detected allergens into the respective allergen table
         for (const allergenId of detectedAllergens) {
             await pool.query(
                 `INSERT INTO ${allergenTable} (${category}_id, allergen_id) VALUES ($1, $2)`,

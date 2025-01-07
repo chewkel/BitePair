@@ -4,24 +4,49 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Add Menu Item</title>
+  <script>
+    function updateSubcategories() {
+      const category = document.getElementById("category").value;
+      const subcategory = document.getElementById("subcategory");
+      subcategory.innerHTML = ""; // Clear previous options
+
+      // Get the subcategories from a data attribute
+      const subcategories = JSON.parse(subcategory.dataset.subcategories);
+
+      const options = subcategories[category] || [];
+      options.forEach(option => {
+        const opt = document.createElement("option");
+        opt.value = option;
+        opt.textContent = option;
+        subcategory.appendChild(opt);
+      });
+    }
+  </script>
 </head>
 <body>
   <h1>Add Menu Item</h1>
   <form action="added" method="POST">
     <label for="category">Category:</label>
-    <select name="category" id="category" required>
+    <select name="category" id="category" onchange="updateSubcategories()" required>
+      <option value="">Select a category</option>
       <option value="food">Food</option>
       <option value="drinks">Drinks</option>
     </select>
 
-    <label for="name">Name:</label>
-    <input type="text" id="name" name="name" placeholder="Item Name" required>
+    <label for="subcategory">Subcategory:</label>
+    <select name="subcategory" id="subcategory" data-subcategories='
+      <%= JSON.stringify(subcategories) %>' required>
+      <!-- Options will be dynamically added here -->
+    </select>
 
-    <label for="price">Price:</label>
-    <input type="number" id="price" name="price" step="0.01" placeholder="Item Price" required>
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name" placeholder="Enter item name" required>
+
+    <label for="price">Price (£):</label>
+    <input type="number" id="price" name="price" step="0.01" placeholder="Enter price" required>
 
     <label for="ingredients">Ingredients:</label>
-    <input type="text" id="ingredients" name="ingredients" placeholder="Comma-separated ingredients" required>
+    <textarea id="ingredients" name="ingredients" placeholder="List ingredients separated by commas" required></textarea>
 
     <button type="submit">Add Item</button>
   </form>
