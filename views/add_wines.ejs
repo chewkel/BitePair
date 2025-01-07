@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add Wine</title>
+</head>
+<body>
+  <h1>Add a New Wine</h1>
+  <form action="/menu/wine/add" method="POST">
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name" required>
+
+    <label for="origin">Origin:</label>
+    <input type="text" id="origin" name="origin" required>
+
+    <label for="category">Category:</label>
+    <select id="category" name="category" required>
+      <option value="White Champagne">White Champagne</option>
+      <option value="Rose Champagne">Rose Champagne</option>
+      <option value="White Wine">White Wine</option>
+      <option value="Rose Wine">Rose Wine</option>
+      <option value="Red Wine">Red Wine</option>
+    </select>
+
+    <label for="glass_price">Glass Price (if applicable):</label>
+    <input type="number" step="0.01" id="glass_price" name="glass_price">
+
+    <label for="small_price">Small Price (if applicable):</label>
+    <input type="number" step="0.01" id="small_price" name="small_price">
+
+    <label for="medium_price">Medium Price (if applicable):</label>
+    <input type="number" step="0.01" id="medium_price" name="medium_price">
+
+    <label for="large_price">Large Price (if applicable):</label>
+    <input type="number" step="0.01" id="large_price" name="large_price">
+
+    <label for="bottle_price">Bottle Price (if applicable):</label>
+    <input type="number" step="0.01" id="bottle_price" name="bottle_price">
+
+    <button type="submit">Add Wine</button>
+  </form>
+</body>
+</html>

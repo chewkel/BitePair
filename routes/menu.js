@@ -27,6 +27,190 @@ router.get('/drinks', async (req, res) => {
     res.render("drinks.ejs", { drinks: result.rows });
 });
 
+router.get("/wines", async (req, res) => {
+    try {
+        const query = `
+            SELECT 
+                id, 
+                name, 
+                origin, 
+                category, 
+                glass_price, 
+                small_price, 
+                medium_price, 
+                large_price, 
+                bottle_price
+            FROM wine
+            ORDER BY category, name;
+        `;
+        const result = await pool.query(query);
+
+        const winesByCategory = {};
+        result.rows.forEach(wine => {
+            if (!winesByCategory[wine.category]) {
+                winesByCategory[wine.category] = [];
+            }
+            winesByCategory[wine.category].push(wine);
+        });
+
+        res.render("wines_list.ejs", { winesByCategory });
+    } catch (err) {
+        console.error("Error fetching wine menu:", err);
+        res.status(500).send("Internal Server Error");
+    }
+});
+
+router.get("/wine/add", (req, res) => {
+    res.render("add_wines.ejs");
+}
+);
+
+router.post("/wine/add", async (req, res) => {
+    const {
+        name,
+        origin,
+        category,
+        glass_price,
+        small_price,
+        medium_price,
+        large_price,
+        bottle_price,
+    } = req.body;
+
+    try {
+        await pool.query(
+            `
+            INSERT INTO wine (name, origin, category, glass_price, small_price, medium_price, large_price, bottle_price)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+            `,
+            [
+                name,
+                origin,
+                category,
+                glass_price || null,
+                small_price || null,
+                medium_price || null,
+                large_price || null,
+                bottle_price || null,
+            ]
+        );
+        res.redirect("/menu/wines");
+    } catch (err) {
+        console.error("Error adding wine:", err);
+        res.status(500).send("Internal Server Error");
+    }
+});
+
+router.get("/wine/edit", async (req, res) => {
+    try {
+        const winequery = `
+            SELECT
+                id, name, origin, category, glass_price, small_price, medium_price, large_price, bottle_price
+            FROM wine
+        `;
+        const wine = await pool.query(winequery);
+        res.render("edit_wines.ejs", { wine: wine.rows });
+    } catch (err) {
+        console.error("Error fetching wine data:", err);
+        res.status(500).send("Internal Server Error");
+    }
+
+});
+
+router.post("/wine/edit", async (req, res) => {
+    const { id, name, origin, category, glass_price, small_price, medium_price, large_price, bottle_price } = req.body;
+
+    if (!id || !name || !origin || !category) {
+        return res.status(400).send("All fields are required");
+    }
+
+    let cleanCategory;
+    if (Array.isArray(category)) {
+        cleanCategory = category[1] ? category[1].trim() : null;
+    } else {
+        cleanCategory = category && typeof category === 'string' ? category.trim() : null;
+    }
+
+    console.log("Cleaned category:", cleanCategory);
+
+    if (!cleanCategory) {
+        return res.status(400).send("Invalid category provided");
+    }
+
+    try {
+        const updateQuery = `
+            UPDATE wine
+            SET name = $1, origin = $2, category = $3, glass_price = $4, small_price = $5, medium_price = $6, large_price = $7, bottle_price = $8
+            WHERE id = $9
+        `;
+        const result = await pool.query(updateQuery, [
+            name,
+            origin,
+            cleanCategory,
+            glass_price || null,
+            small_price || null,
+            medium_price || null,
+            large_price || null,
+            bottle_price || null,
+            id
+        ]);
+
+        if (result.rowCount === 0) {
+            return res.status(404).send("Wine not found");
+        }
+
+        res.redirect("edit");
+    } catch (err) {
+        console.error("Error updating wine:", err);
+        res.status(500).send("Internal Server Error");
+    }
+});
+
+router.get("/wine/delete", async (req, res) => {
+    try {
+        const winequery = `
+            SELECT
+                id, name, origin, category, glass_price, small_price, medium_price, large_price, bottle_price
+            FROM wine
+        `;
+        const wine = await pool.query(winequery);
+        res.render("delete_wines.ejs", { wine: wine.rows, selectedWine: null });
+    } catch (err) {
+        console.error("Error fetching wine data:", err);
+        res.status(500).send("Internal Server Error");
+    }
+});
+
+router.post("/wine/delete", async (req, res) => {
+    const { id } = req.body; // This should be a single wine id
+
+    // Validate the incoming data
+    if (!id) {
+        return res.status(400).send("Wine ID is required for deletion");
+    }
+
+    try {
+        console.log("Attempting to delete wine with ID:", id);
+
+        // Start the transaction
+        await pool.query("BEGIN");
+
+        // Now, delete the wine record
+        await pool.query("DELETE FROM wine WHERE id = $1", [id]);
+
+        // Commit the transaction
+        await pool.query("COMMIT");
+
+        // Redirect or respond with success
+        res.redirect("/lists");
+    } catch (err) {
+        // In case of error, rollback the transaction
+        console.error("Error deleting wine:", err);
+        await pool.query("ROLLBACK");
+        res.status(500).send("Internal Server Error");
+    }
+});
+
 router.get("/lists", async (req, res) => {
     try {
         const foodQuery = `
@@ -107,15 +291,12 @@ router.get("/edit", async (req, res) => {
     }
 });
 
-// editted page  
-
 router.post("/editted", async (req, res) => {
     console.log(req.body);
     const { name, price, ingredients, allergens } = req.body;
 
-    // Determine if it's food or drink from a hidden input or additional info
-    const category = req.body.category; // Should be sent as a hidden input in the form
-    const id = req.body.id; // Also send the item ID in the form as a hidden input
+    const category = req.body.category;
+    const id = req.body.id;
 
     if (!id || !category) {
         return res.status(400).send("Invalid request");
@@ -125,19 +306,15 @@ router.post("/editted", async (req, res) => {
     const allergenTable = category === "food" ? "food_allergen" : "drink_allergen";
 
     try {
-        // Start a transaction
         await pool.query("BEGIN");
 
-        // Update the food or drink details
         await pool.query(
             `UPDATE ${tableName} SET name = $1, price = $2, ingredients = $3 WHERE id = $4`,
             [name, price, ingredients, id]
         );
 
-        // Remove old allergen associations for the item
         await pool.query(`DELETE FROM ${allergenTable} WHERE ${category}_id = $1`, [id]);
 
-        // Automatically detect allergens based on ingredients
         const ingredientsArray = ingredients.split(",").map((ing) => ing.trim().toLowerCase());
         const detectedAllergens = [];
 
@@ -148,7 +325,6 @@ router.post("/editted", async (req, res) => {
             }
         });
 
-        // Insert new allergen associations
         for (const allergenId of detectedAllergens) {
             await pool.query(
                 `INSERT INTO ${allergenTable} (${category}_id, allergen_id) VALUES ($1, $2)`,
@@ -156,7 +332,6 @@ router.post("/editted", async (req, res) => {
             );
         }
 
-        // Commit the transaction
         await pool.query("COMMIT");
 
         // Redirect back to the edit page or elsewhere
@@ -183,7 +358,6 @@ router.post("/added", async (req, res) => {
     const tableName = category === "food" ? "food" : "drinks";
     const allergenTable = category === "food" ? "food_allergen" : "drink_allergen";
 
-    // Allergen mapping based on keywords
     const allergenMapping = {
         "nuts": ["nuts", "almond", "cashew", "pecan", "walnut", "hazelnut"],
         "dairy": ["milk", "cream", "cheese", "butter", "yogurt"],
@@ -200,7 +374,6 @@ router.post("/added", async (req, res) => {
     try {
         await pool.query("BEGIN");
 
-        // Insert new item
         const result = await pool.query(
             `INSERT INTO ${tableName} (name, price, ingredients) VALUES ($1, $2, $3) RETURNING id`,
             [name, price, ingredients]
@@ -208,20 +381,18 @@ router.post("/added", async (req, res) => {
 
         const newItemId = result.rows[0].id;
 
-        // Normalize and split ingredients
         const ingredientsArray = ingredients
             .toLowerCase()
-            .split(/[,;]+/) // Split by commas or semicolons
+            .split(/[,;]+/)
             .map((ing) => ing.trim());
 
         const detectedAllergens = [];
 
-        // Fetch all allergens from the database
         const allergenResults = await pool.query("SELECT id, name FROM allergen");
         allergenResults.rows.forEach((allergen) => {
             const allergenKeywords = allergenMapping[allergen.name.toLowerCase()];
             if (allergenKeywords) {
-                // Check if any keyword matches any ingredient
+
                 const hasAllergen = ingredientsArray.some((ingredient) =>
                     allergenKeywords.some((keyword) => ingredient.includes(keyword))
                 );
@@ -231,7 +402,6 @@ router.post("/added", async (req, res) => {
             }
         });
 
-        // Insert detected allergens into the allergen table
         for (const allergenId of detectedAllergens) {
             await pool.query(
                 `INSERT INTO ${allergenTable} (${category}_id, allergen_id) VALUES ($1, $2)`,
@@ -290,19 +460,16 @@ router.post("/delete", async (req, res) => {
 
     const tableName = category === "food" ? "food" : "drinks";
     const allergenTable = category === "food" ? "food_allergen" : "drink_allergen";
-    const foreignKey = category === "food" ? "food_id" : "drink_id"; // Dynamically set the foreign key column
+    const foreignKey = category === "food" ? "food_id" : "drink_id";
 
     try {
-        // Start a transaction
+
         await pool.query("BEGIN");
 
-        // Delete associations in allergen table
         await pool.query(`DELETE FROM ${allergenTable} WHERE ${foreignKey} = $1`, [id]);
 
-        // Delete the item
         await pool.query(`DELETE FROM ${tableName} WHERE id = $1`, [id]);
 
-        // Commit transaction
         await pool.query("COMMIT");
 
         res.redirect("/menu/delete");
