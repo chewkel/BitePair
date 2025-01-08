@@ -312,7 +312,7 @@ router.get("/edit", async (req, res) => {
     try {
         const foodQuery = `
             SELECT 
-                f.id, f.name, f.ingredients, f.price, 
+                f.id, f.name, f.ingredients, f.price, f.category,
                 ARRAY_AGG(a.name) AS allergens
             FROM food f
             LEFT JOIN food_allergen fa ON f.id = fa.food_id
@@ -323,7 +323,7 @@ router.get("/edit", async (req, res) => {
 
         const drinkQuery = `
             SELECT 
-                d.id, d.name, d.ingredients, d.price, 
+                d.id, d.name, d.ingredients, d.price, d.category,
                 ARRAY_AGG(a.name) AS allergens
             FROM drinks d
             LEFT JOIN drink_allergen da ON d.id = da.drink_id
@@ -332,18 +332,13 @@ router.get("/edit", async (req, res) => {
         `;
         const drink = await pool.query(drinkQuery);
 
-        const allergen = await pool.query('SELECT * FROM allergen');
+        const allergen = await pool.query("SELECT * FROM allergen");
 
         res.render("edit.ejs", {
             food: food.rows,
             drink: drink.rows,
-            allergen: allergen.rows
+            allergen: allergen.rows,
         });
-
-        // console.log(food.rows);
-        // console.log(drink.rows);
-        // console.log(allergen.rows);
-
     } catch (err) {
         console.error("Error fetching data for edit page:", err);
         res.status(500).send("Internal Server Error");
@@ -352,56 +347,81 @@ router.get("/edit", async (req, res) => {
 
 router.post("/editted", async (req, res) => {
     console.log(req.body);
-    const { name, price, ingredients, allergens } = req.body;
-
-    const category = req.body.category;
-    const id = req.body.id;
+    const { id, type_category, name, price, ingredients, category } = req.body;
 
     if (!id || !category) {
         return res.status(400).send("Invalid request");
     }
 
-    const tableName = category === "food" ? "food" : "drinks";
-    const allergenTable = category === "food" ? "food_allergen" : "drink_allergen";
+    const tableName = type_category === "food" ? "food" : "drinks";
+    const allergenTable = type_category === "food" ? "food_allergen" : "drink_allergen";
+
+    // Allergen keywords mapping
+    const allergenMapping = {
+        "nuts": ["nuts", "almond", "cashew", "pecan", "walnut", "hazelnut"],
+        "dairy": ["milk", "cream", "cheese", "butter", "yogurt"],
+        "gluten": ["wheat", "barley", "rye", "bread", "pasta"],
+        "soy": ["soy", "tofu", "soymilk"],
+        "eggs": ["egg", "eggs", "yolk"],
+        "shellfish": ["shrimp", "lobster", "crab", "prawn"],
+        "fish": ["fish", "salmon", "tuna", "cod"],
+        "celery": ["celery"],
+        "sesame": ["sesame", "tahini"],
+        "sulphur dioxide": ["sulphur", "sulfur", "preservative"]
+    };
 
     try {
         await pool.query("BEGIN");
 
+        // Update the menu item
         await pool.query(
-            `UPDATE ${tableName} SET name = $1, price = $2, ingredients = $3 WHERE id = $4`,
-            [name, price, ingredients, id]
+            `UPDATE ${tableName} SET name = $1, price = $2, ingredients = $3, category = $4 WHERE id = $5`,
+            [name, price, ingredients, category, id]
         );
 
-        await pool.query(`DELETE FROM ${allergenTable} WHERE ${category}_id = $1`, [id]);
+        // Clear existing allergens
+        await pool.query(`DELETE FROM ${allergenTable} WHERE ${type_category}_id = $1`, [id]);
 
-        const ingredientsArray = ingredients.split(",").map((ing) => ing.trim().toLowerCase());
+        // Detect allergens
+        const ingredientsArray = ingredients
+            .toLowerCase()
+            .split(/[,;]+/)
+            .map((ing) => ing.trim());
+
         const detectedAllergens = [];
 
         const allergenResults = await pool.query("SELECT id, name FROM allergen");
         allergenResults.rows.forEach((allergen) => {
-            if (ingredientsArray.includes(allergen.name.toLowerCase())) {
-                detectedAllergens.push(allergen.id);
+            const allergenKeywords = allergenMapping[allergen.name.toLowerCase()];
+            if (allergenKeywords) {
+                const hasAllergen = ingredientsArray.some((ingredient) =>
+                    allergenKeywords.some((keyword) => ingredient.includes(keyword))
+                );
+                if (hasAllergen) {
+                    detectedAllergens.push(allergen.id);
+                }
             }
         });
 
+        // Insert detected allergens into the respective allergen table
         for (const allergenId of detectedAllergens) {
             await pool.query(
-                `INSERT INTO ${allergenTable} (${category}_id, allergen_id) VALUES ($1, $2)`,
+                `INSERT INTO ${allergenTable} (${type_category}_id, allergen_id) VALUES ($1, $2)`,
                 [id, allergenId]
             );
         }
 
         await pool.query("COMMIT");
 
-        // Redirect back to the edit page or elsewhere
-        // res.redirect("/menu/edit");
-        res.send("Item updated successfully! <a href=" + "./edit" + ">Edit</a>");
+        res.send("Item updated successfully! <a href='./edit'>Back to Edit</a>");
     } catch (err) {
         console.error("Error updating item:", err);
         await pool.query("ROLLBACK");
         res.status(500).send("Internal Server Error");
     }
 });
+
+
 
 router.get("/add", (req, res) => {
     // Define subcategories for food and drinks
