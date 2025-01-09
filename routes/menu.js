@@ -3,18 +3,6 @@ const pool = require('../db');
 const { render } = require('ejs');
 const router = express.Router();
 
-// router.get('/food', async (req, res) => {
-//     const result = await pool.query(
-//         `SELECT f.id, f.name, f.price, f.ingredients, 
-//               COALESCE(array_agg(a.name) FILTER (WHERE a.name IS NOT NULL), '{}') AS allergens
-//        FROM food f
-//        LEFT JOIN food_allergen fa ON f.id = fa.food_id
-//        LEFT JOIN allergen a ON fa.allergen_id = a.id
-//        GROUP BY f.id`
-//     );
-//     res.render("food.ejs", { food: result.rows });
-// });
-
 router.get("/food", async (req, res) => {
     try {
         const foodQuery = `
@@ -49,6 +37,54 @@ router.get("/food", async (req, res) => {
         res.status(500).send("Internal Server Error");
     }
 });
+
+router.get("/foodtest", async (req, res) => {
+    try {
+        const result = await pool.query(
+            `SELECT f.id, f.name, f.price, f.ingredients, 
+                  COALESCE(array_agg(a.name) FILTER (WHERE a.name IS NOT NULL), '{}') AS allergens
+           FROM food f
+           LEFT JOIN food_allergen fa ON f.id = fa.food_id
+           LEFT JOIN allergen a ON fa.allergen_id = a.id
+           GROUP BY f.id`
+        );
+        res.json(result.rows);
+    } catch (err) {
+        console.error("Error fetching food menu:", err);
+        res.status(500).send("Internal Server Error");
+    }
+});
+
+router.get("/drinkstest", async (req, res) => {
+    try {
+        const result = await pool.query(
+            `SELECT d.id, d.name, d.price, d.ingredients, 
+                  COALESCE(array_agg(a.name) FILTER (WHERE a.name IS NOT NULL), '{}') AS allergens
+           FROM drinks d
+           LEFT JOIN drink_allergen da ON d.id = da.drink_id
+           LEFT JOIN allergen a ON da.allergen_id = a.id
+           GROUP BY d.id`
+        );
+        res.json(result.rows);
+    } catch (err) {
+        console.error("Error fetching drinks menu:", err);
+        res.status(500).send("Internal Server Error");
+    }
+});
+
+router.get("/winetest", async (req, res) => {
+    try {
+        const result = await pool.query(
+            `SELECT id, name, origin, category, glass_price, small_price, medium_price, large_price, bottle_price
+            FROM wine`
+        );
+        res.json(result.rows);
+    } catch (err) {
+        console.error("Error fetching wine menu:", err);
+        res.status(500).send("Internal Server Error");
+    }
+}
+);
 
 router.get('/drinks', async (req, res) => {
     try {
@@ -241,9 +277,8 @@ router.get("/wine/delete", async (req, res) => {
 });
 
 router.post("/wine/delete", async (req, res) => {
-    const { id } = req.body; // This should be a single wine id
+    const { id } = req.body;
 
-    // Validate the incoming data
     if (!id) {
         return res.status(400).send("Wine ID is required for deletion");
     }
@@ -251,19 +286,14 @@ router.post("/wine/delete", async (req, res) => {
     try {
         console.log("Attempting to delete wine with ID:", id);
 
-        // Start the transaction
         await pool.query("BEGIN");
 
-        // Now, delete the wine record
         await pool.query("DELETE FROM wine WHERE id = $1", [id]);
 
-        // Commit the transaction
         await pool.query("COMMIT");
 
-        // Redirect or respond with success
         res.redirect("/lists");
     } catch (err) {
-        // In case of error, rollback the transaction
         console.error("Error deleting wine:", err);
         await pool.query("ROLLBACK");
         res.status(500).send("Internal Server Error");
@@ -294,9 +324,17 @@ router.get("/lists", async (req, res) => {
         `;
         const drink = await pool.query(drinkQuery);
 
+        const wineQuery = `
+            SELECT
+                id, name, origin, category, glass_price, small_price, medium_price, large_price, bottle_price
+            FROM wine
+        `;
+        const wine = await pool.query(wineQuery);
+
         res.render("lists.ejs", {
             food: food.rows,
-            drink: drink.rows
+            drink: drink.rows,
+            wine: wine.rows,
         });
 
         // console.log(food.rows);
@@ -356,7 +394,6 @@ router.post("/editted", async (req, res) => {
     const tableName = type_category === "food" ? "food" : "drinks";
     const allergenTable = type_category === "food" ? "food_allergen" : "drink_allergen";
 
-    // Allergen keywords mapping
     const allergenMapping = {
         "nuts": ["nuts", "almond", "cashew", "pecan", "walnut", "hazelnut"],
         "dairy": ["milk", "cream", "cheese", "butter", "yogurt"],
@@ -373,16 +410,13 @@ router.post("/editted", async (req, res) => {
     try {
         await pool.query("BEGIN");
 
-        // Update the menu item
         await pool.query(
             `UPDATE ${tableName} SET name = $1, price = $2, ingredients = $3, category = $4 WHERE id = $5`,
             [name, price, ingredients, category, id]
         );
 
-        // Clear existing allergens
         await pool.query(`DELETE FROM ${allergenTable} WHERE ${type_category}_id = $1`, [id]);
 
-        // Detect allergens
         const ingredientsArray = ingredients
             .toLowerCase()
             .split(/[,;]+/)
@@ -403,7 +437,6 @@ router.post("/editted", async (req, res) => {
             }
         });
 
-        // Insert detected allergens into the respective allergen table
         for (const allergenId of detectedAllergens) {
             await pool.query(
                 `INSERT INTO ${allergenTable} (${type_category}_id, allergen_id) VALUES ($1, $2)`,
@@ -424,7 +457,6 @@ router.post("/editted", async (req, res) => {
 
 
 router.get("/add", (req, res) => {
-    // Define subcategories for food and drinks
     const subcategories = {
         food: [
             "Burgers & Sandwiches",
@@ -449,19 +481,16 @@ router.get("/add", (req, res) => {
         ]
     };
 
-    // Pass the subcategories to the view
     res.render("add_menu.ejs", { subcategories });
 });
 
 router.post("/added", async (req, res) => {
     const { category, subcategory, name, price, ingredients } = req.body;
 
-    // Validate inputs
     if (!name || !price || !ingredients || !category || !subcategory) {
         return res.status(400).send("All fields are required");
     }
 
-    // Determine table names based on category
     const tableName = category === "food" ? "food" : "drinks";
     const allergenTable = category === "food" ? "food_allergen" : "drink_allergen";
 
@@ -481,7 +510,6 @@ router.post("/added", async (req, res) => {
     try {
         await pool.query("BEGIN");
 
-        // Insert the new menu item with the subcategory
         const result = await pool.query(
             `INSERT INTO ${tableName} (name, ingredients, price, category) VALUES ($1, $2, $3, $4) RETURNING id`,
             [name, ingredients, price, subcategory]
@@ -489,7 +517,6 @@ router.post("/added", async (req, res) => {
 
         const newItemId = result.rows[0].id;
 
-        // Process allergens
         const ingredientsArray = ingredients
             .toLowerCase()
             .split(/[,;]+/)
@@ -510,7 +537,6 @@ router.post("/added", async (req, res) => {
             }
         });
 
-        // Insert detected allergens into the respective allergen table
         for (const allergenId of detectedAllergens) {
             await pool.query(
                 `INSERT INTO ${allergenTable} (${category}_id, allergen_id) VALUES ($1, $2)`,

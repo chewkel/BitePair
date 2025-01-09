@@ -25,9 +25,8 @@ router.get("/", function (req, res, next) {
 
 router.get('/users', async (req, res) => {
     try {
-        // Query to select all users from the 'public' schema
         const result = await pool.query('SELECT * FROM public.users');
-        res.json(result.rows); // Send data from users table
+        res.json(result.rows);
     } catch (err) {
         console.error('Error fetching users:', err.message);
         res.status(500).send('Database query failed');
@@ -125,93 +124,6 @@ router.get("/edit", redirectLogin, async (req, res) => {
         res.status(500).send('Database query failed');
     }
 });
-// router.post("/editted", redirectLogin, (req, res, next) => {
-//     let username = req.sanitize(req.body.username);
-//     let email = req.sanitize(req.body.email);
-//     let password = req.sanitize(req.body.password);
-//     let current = req.sanitize(req.body.current);
-
-//     let sqlquery = "SELECT hashedPassword FROM users WHERE username = ?";
-//     db.query(sqlquery, [req.session.userId], (err, result) => {
-//       if (err) {
-//         return next(err);
-//       }
-
-//       if (result.length === 0) {
-//         return res.send("User not found <a href=" + "./edit" + ">Try again</a>");
-//       }
-
-//       let storedHashedPassword = result[0].hashedPassword;
-
-//       bcrypt.compare(current, storedHashedPassword, (err, isMatch) => {
-//         if (err) {
-//           return next(err);
-//         }
-
-//         if (!isMatch) {
-//           return res.send(
-//             "Current password is incorrect <a href=" + "./edit" + ">Try again</a>"
-//           );
-//         }
-
-//         let checkQuery =
-//           "SELECT * FROM users WHERE (username = ? OR email = ?) AND username != ?";
-//         db.query(
-//           checkQuery,
-//           [username, email, req.session.userId],
-//           (err, result) => {
-//             if (err) {
-//               return next(err);
-//             }
-
-//             if (result.length > 0) {
-//               return res.send(
-//                 "Username or email is already taken <a href=" +
-//                 "./edit" +
-//                 ">Try again</a>"
-//               );
-//             }
-
-//             bcrypt.hash(password, saltRounds, (err, hashedPassword) => {
-//               if (err) {
-//                 return next(err);
-//               }
-
-//               let updateQuery =
-//                 "UPDATE users SET username = ?, email = ?, hashedPassword = ? WHERE username = ?";
-//               db.query(
-//                 updateQuery,
-//                 [username, email, hashedPassword, req.session.userId],
-//                 (err, result) => {
-//                   if (err) {
-//                     return next(err);
-//                   }
-
-//                   let updateRecipeQuery =
-//                     "UPDATE recipes SET user_id = ? WHERE user_id = ?";
-//                   db.query(
-//                     updateRecipeQuery,
-//                     [username, req.session.userId],
-//                     (err, result) => {
-//                       if (err) {
-//                         return next(err);
-//                       }
-//                       req.session.userId = username;
-//                       res.send(
-//                         "User updated successfully! <a href=" +
-//                         "../" +
-//                         ">Home</a>"
-//                       );
-//                     }
-//                   );
-//                 }
-//               );
-//             });
-//           }
-//         );
-//       });
-//     });
-//   });
 
 router.post("/editted", redirectLogin, async (req, res) => {
     let username = req.sanitize(req.body.username);

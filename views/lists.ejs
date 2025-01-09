@@ -50,11 +50,11 @@
   <ul>
     <% food.forEach(item => { %>
     <li>
-      <strong><%= item.name %></strong> - $<%= item.price %> <br>
+      <strong><%= item.name %></strong> - £<%= item.price %> <br>
       Ingredients: <%= item.ingredients %> <br>
       Allergens: 
-      <% if (item.allergens && item.allergens.length > 0) { %>
-        <% item.allergens.forEach(allergen => { %>
+      <% if (item.allergen && item.allergen.length > 0) { %>
+        <% item.allergen.forEach(allergen => { %>
           <% if (allergen) { %> <!-- Check if allergen is valid -->
             <span class="allergen-symbol">
               <%= allergen[0].toUpperCase() %> <!-- First letter of allergen -->
@@ -73,11 +73,11 @@
   <ul>
     <% drink.forEach(item => { %>
     <li>
-      <strong><%= item.name %></strong> - $<%= item.price %> <br>
+      <strong><%= item.name %></strong> - £<%= item.price %> <br>
       Ingredients: <%= item.ingredients %> <br>
       Allergens: 
-      <% if (item.allergens && item.allergens.length > 0) { %>
-        <% item.allergens.forEach(allergen => { %>
+      <% if (item.allergen && item.allergen.length > 0) { %>
+        <% item.allergen.forEach(allergen => { %>
           <% if (allergen) { %> <!-- Check if allergen is valid -->
             <span class="allergen-symbol">
               <%= allergen[0].toUpperCase() %> <!-- First letter of allergen -->
@@ -91,5 +91,22 @@
     </li>
     <% }) %>
   </ul>
+
+  <h2> Wine</h2>
+    <ul>
+        <% wine.forEach(item => { %>
+        <li>
+            <strong><%= item.name %></strong><br>
+            Origin: <%= item.origin %><br>
+            Category: <%= item.category %><br>
+            Glass: £<%= item.glass_price %><br>
+            Small: £<%= item.small_price %><br>
+            Medium: £<%= item.medium_price %><br>
+            Large: £<%= item.large_price %><br>
+            Bottle: £<%= item.bottle_price %><br>
+        </li>
+        <% }) %>
+
+    </ul>
 </body>
 </html>

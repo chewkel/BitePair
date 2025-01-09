@@ -34,26 +34,17 @@ app.use(
 // Middleware
 app.use(express.json());
 
-app.get('/test', async (req, res) => {
-    try {
-        const results = await pool.query('SELECT * FROM pg_catalog.pg_tables WHERE schemaname = \'public\'');
-        res.json(results.rows);
-    } catch (err) {
-        console.error(err.message);
-
-        res.status(500).json({ error: 'Database error' });
-    }
-});
-
-app.get('/', (req, res) => {
-    res.send('Hello World!');
-});
+const mainRoutes = require("./routes/main");
+app.use("/", mainRoutes);
 
 const usersRouter = require('./routes/users');
 app.use('/users', usersRouter);
 
 const menuRouter = require('./routes/menu');
 app.use('/menu', menuRouter);
+
+const basketRouter = require('./routes/basket');
+app.use('/basket', basketRouter);
 
 // Start the server
 const PORT = 8000;
