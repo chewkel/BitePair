@@ -5,115 +5,56 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Your Basket</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 20px;
-    }
-
-    th, td {
-      padding: 10px;
-      text-align: left;
-      border: 1px solid #ddd;
-    }
-
-    th {
-      background-color: #f4f4f4;
-    }
-
-    .actions {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-    }
-
-    .actions button {
-      padding: 5px 10px;
-      font-size: 14px;
-      cursor: pointer;
-    }
-
-    .total {
-      text-align: right;
-      font-size: 18px;
-      font-weight: bold;
-    }
+    body { font-family: Arial, sans-serif; text-align: center; }
+    table { width: 80%; margin: auto; border-collapse: collapse; }
+    th, td { border: 1px solid #ddd; padding: 8px; }
+    .button { background: green; color: white; border: none; padding: 5px 10px; cursor: pointer; }
+    .remove { background: red; }
   </style>
 </head>
 <body>
   <h1>Your Basket</h1>
 
-  <% if (basket && basket.items && basket.items.length > 0) { %>
+  <% if (basket.length > 0) { %>
     <table>
-      <thead>
-        <tr>
-          <th>Item</th>
-          <th>Category</th>
-          <th>Quantity</th>
-          <th>Price</th>
-          <th>Total</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% basket.items.forEach(item => { %>
-        <tr>
-          <td><%= item.name %></td>
-          <td><%= item.category %></td>
-          <td><%= item.quantity %></td>
-          <td>£<%= item.price.toFixed(2) %></td>
-          <td>£<%= (item.quantity * item.price).toFixed(2) %></td>
-          <td class="actions">
-            <button class="minus" data-id="<%= item.id %>" data-category="<%= item.category %>">-</button>
-            <button class="plus" data-id="<%= item.id %>" data-category="<%= item.category %>">+</button>
-            <button class="remove" data-id="<%= item.id %>" data-category="<%= item.category %>">Remove</button>
-          </td>
-        </tr>
-        <% }) %>
-      </tbody>
+      <tr>
+        <th>Item</th>
+        <th>Quantity</th>
+        <th>Price</th>
+        <th>Total</th>
+        <th>Actions</th>
+      </tr>
+      <% basket.forEach(item => { %>
+      <tr>
+        <td><%= item.name %></td>
+        <td><%= item.quantity %></td>
+        <td>£<%= (item.quantity * item.price).toFixed(2) %></td>
+        <td>
+          <button class="button plus" data-id="<%= item.id %>">+</button>
+          <button class="button minus" data-id="<%= item.id %>">-</button>
+          <button class="button remove" data-id="<%= item.id %>">Remove</button>
+        </td>
+      </tr>
+      <% }) %>
     </table>
-  
-    <div class="total">Total: £<%= basket.total.toFixed(2) %></div>
-  
-    <form action="/checkout" method="POST">
-      <button type="submit">Proceed to Payment</button>
-    </form>
+    <h2>Total: £<%= total.toFixed(2) %></h2>
   <% } else { %>
-    <p>Your basket is empty. <a href="/menu">Go back to the menu</a>.</p>
+    <p>Your basket is empty. <a href="/">Go back</a>.</p>
   <% } %>
 
   <script>
     document.addEventListener("click", async (e) => {
       if (e.target.classList.contains("plus") || e.target.classList.contains("minus") || e.target.classList.contains("remove")) {
-        const isPlus = e.target.classList.contains("plus");
-        const isRemove = e.target.classList.contains("remove");
-        const itemId = e.target.dataset.id;
-        const category = e.target.dataset.category;
+        const change = e.target.classList.contains("plus") ? 1 : e.target.classList.contains("minus") ? -1 : 0;
+        const id = e.target.dataset.id;
 
-        try {
-          const response = await fetch("/basket/update", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              id: itemId,
-              category: category,
-              change: isRemove ? 0 : (isPlus ? 1 : -1) // 0 means remove item entirely
-            })
-          });
+        await fetch(`/basket/${change ? "update" : "remove"}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id, change }),
+        });
 
-          const result = await response.json();
-          if (result.success) {
-            location.reload(); // Reload the basket page to reflect updated data
-          } else {
-            alert(result.message);
-          }
-        } catch (err) {
-          console.error("Error updating basket:", err);
-        }
+        location.reload();
       }
     });
   </script>

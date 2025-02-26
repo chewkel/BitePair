@@ -614,4 +614,36 @@ router.post("/delete", async (req, res) => {
         res.status(500).send("Internal Server Error");
     }
 });
+
+router.get("/menu", async (req, res) => {
+    try {
+        const food = await pool.query(`
+            SELECT 
+                f.id, f.name, f.price, 
+                ARRAY_AGG(a.name) AS allergens
+            FROM food f
+            LEFT JOIN food_allergen fa ON f.id = fa.food_id
+            LEFT JOIN allergen a ON fa.allergen_id = a.id
+            GROUP BY f.id
+        `);
+
+        const drinks = await pool.query(`
+            SELECT 
+                d.id, d.name, d.price, 
+                ARRAY_AGG(a.name) AS allergens
+            FROM drinks d
+            LEFT JOIN drink_allergen da ON d.id = da.drink_id
+            LEFT JOIN allergen a ON da.allergen_id = a.id
+            GROUP BY d.id
+        `);
+
+        res.render("menu.ejs", {
+            food: food.rows,
+            drinks: drinks.rows
+        });
+    } catch (err) {
+        console.error("Error fetching data for menu page:", err);
+        res.status(500).send("Internal Server Error");
+    }
+});
 module.exports = router;

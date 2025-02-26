@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Menu</title>
+</head>
+<body>
+  <h1>Menu</h1>
+
+  <!-- food -->
+    <h2>Food</h2>
+    <div class="category-container">
+      <% food.forEach(item => { %>
+        <div class="food-card">
+          <h3><%= item.name %></h3>
+          <p><%= item.description %></p>
+          <p><%= item.price %></p>
+          <button class="button add" data-id="<%= item.id %>">Add to Basket</button>
+        </div>
+      <% }) %>
+    </div>
+
+    <!-- drinks -->
+    <h2>Drinks</h2>
+    <div class="category-container">
+      <% drinks.forEach(item => { %>
+        <div class="drink-card">
+          <h3><%= item.name %></h3>
+          <p><%= item.description %></p>
+          <p><%= item.price %></p>
+          <button class="button add" data-id="<%= item.id %>">Add to Basket</button>
+        </div>
+      <% }) %>
+    </div>
+
+    <script>
+      document.addEventListener("click", async (e) => {
+        if (e.target.classList.contains("add")) {
+          const id = e.target.dataset.id;
+          const name = e.target.dataset.name;
+         const price = e.target.dataset.price;
+            
+
+          await fetch("/basket/add", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id , name, price }),
+          });
+
+          location.reload();
+        }
+      });
+    </script>
+</html>
