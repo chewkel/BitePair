@@ -8,13 +8,14 @@ function getAllergenIcon(allergen) {
     Dairy: "fa-solid fa-glass-water",
     Eggs: "fa-solid fa-egg",
     Peanuts: "fa-solid fa-peanut", // FA6: peanut icon
-    "Tree Nuts": "fa-solid fa-seedling",
+    Nuts: "fa-solid fa-seedling",
     Soy: "fa-solid fa-leaf",
     Wheat: "fa-solid fa-bread-slice",
     Fish: "fa-solid fa-fish",
     Shellfish: "fa-solid fa-shrimp",
     Sesame: "fa-solid fa-seedling",
-    Nuts: "fa-solid fa-nuts",
+    Gluten: "fa-solid fa-bread-slice",
+
   };
 
   return allergenIcons[allergen] || "fa-solid fa-question"; // Default icon if not found
