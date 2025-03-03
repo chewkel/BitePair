@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <title>Food Menu</title>
   <style>
     body {
@@ -166,19 +167,19 @@
             <span>£<%= item.price %></span>
           </div>
 
-          <p>Allergens: 
-            <% if (item.allergens && item.allergens.length > 0) { %>
-              <% item.allergens.forEach(allergen => { %>
-                <% if (allergen) { %> 
-                  <span class="allergen-symbol" data-allergen="<%= allergen %>">
-                    <%= allergen[0].toUpperCase() %>
-                  </span>
-                <% } %>
-              <% }) %>
-            <% } else { %>
-              None
-            <% } %>
-          </p>
+        <p>Allergens: 
+          <% if (item.allergens && item.allergens.length > 0) { %>
+            <% item.allergens.forEach(allergen => { %>
+              <% if (allergen) { %> 
+                <span class="allergen-symbol" data-allergen="<%= allergen %>">
+                  <i class="<%= getAllergenIcon(allergen) %>"></i>
+                </span>
+              <% } %>
+            <% }) %>
+          <% } else { %>
+            None
+          <% } %>
+        </p>
         </div>
         
       <% }) %>

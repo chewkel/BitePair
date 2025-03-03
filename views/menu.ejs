@@ -15,7 +15,8 @@
         <div class="food-card">
           <h3><%= item.name %></h3>
           <p><%= item.description %></p>
-          <p><%= item.price %></p>
+          <p>£<%= item.price %></p>
+          <p>Allergens: <%= item.allergens %></p>
           <button class="button add" data-id="<%= item.id %>">Add to Basket</button>
         </div>
       <% }) %>
