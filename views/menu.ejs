@@ -38,17 +38,21 @@
       document.addEventListener("click", async (e) => {
         if (e.target.classList.contains("add")) {
           const id = e.target.dataset.id;
-          const name = e.target.dataset.name;
-         const price = e.target.dataset.price;
-            
+          const name = e.target.closest("div").querySelector("h3").innerText;
+          const price = parseFloat(e.target.closest("div").querySelector("p:nth-of-type(2)").innerText);
+    
+          try {
+            const response = await fetch("/basket/add", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ id, name, price }),
+            });
+    
+            const result = await response.json();
 
-          await fetch("/basket/add", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ id , name, price }),
-          });
-
-          location.reload();
+          } catch (error) {
+            console.error("Error adding to basket:", error);
+          }
         }
       });
     </script>
