@@ -15,12 +15,11 @@
         <div class="food-card">
           <h3><%= item.name %></h3>
           <p><%= item.description %></p>
-          <p>£<%= item.price %></p>
-          <p>Allergens: <%= item.allergens %></p>
+          <p><%= item.price %></p>
+          <p><%= item.allergens %></p>
           <button class="button add" data-id="<%= item.id %>">Add to Basket</button>
         </div>
       <% }) %>
-    </div>
 
     <!-- drinks -->
     <h2>Drinks</h2>
@@ -35,26 +34,26 @@
       <% }) %>
     </div>
 
-    <script>
-      document.addEventListener("click", async (e) => {
-        if (e.target.classList.contains("add")) {
-          const id = e.target.dataset.id;
-          const name = e.target.closest("div").querySelector("h3").innerText;
-          const price = parseFloat(e.target.closest("div").querySelector("p:nth-of-type(2)").innerText);
-    
-          try {
-            const response = await fetch("/basket/add", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ id, name, price }),
-            });
-    
-            const result = await response.json();
+<script>
+  document.addEventListener("click", async (e) => {
+    if (e.target.classList.contains("add")) {
+      const id = e.target.dataset.id;
+      const name = e.target.closest("div").querySelector("h3").innerText;
+      const price = parseFloat(e.target.closest("div").querySelector("p:nth-of-type(2)").innerText);
 
-          } catch (error) {
-            console.error("Error adding to basket:", error);
-          }
-        }
-      });
-    </script>
+      try {
+        const response = await fetch("/basket/add", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id, name, price }),
+        });
+
+        const result = await response.json();
+
+      } catch (error) {
+        console.error("Error adding to basket:", error);
+      }
+    }
+  });
+</script>
 </html>

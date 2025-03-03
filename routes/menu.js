@@ -14,6 +14,7 @@ function getAllergenIcon(allergen) {
     Fish: "fa-solid fa-fish",
     Shellfish: "fa-solid fa-shrimp",
     Sesame: "fa-solid fa-seedling",
+    Nuts: "fa-solid fa-nuts",
   };
 
   return allergenIcons[allergen] || "fa-solid fa-question"; // Default icon if not found
