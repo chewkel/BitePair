@@ -1,0 +1,983 @@
+:root {
+    --primary-color: #ff6b6b;
+    --secondary-color: #4ecdc4;
+    --dark-color: #292f36;
+    --light-color: #f7fff7;
+    --accent-color: #ffd166;
+    --font-main: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: var(--font-main);
+    line-height: 1.6;
+    color: var(--dark-color);
+    background-color: #f9f9f9;
+    padding: 20px;
+  }
+  
+  /* Header Styles */
+  header {
+    text-align: center;
+    padding: 2rem 0;
+    margin-bottom: 2rem;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+  }
+  
+  /* Main Container */
+  .shop-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+  }
+  
+  /* Section Styles */
+  section {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease;
+  }
+  
+  section:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  section h2 {
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--accent-color);
+  }
+  
+  .menu-subsection {
+    margin-bottom: 1.5rem;
+  }
+  
+  .menu-subsection h3 {
+    color: var(--secondary-color);
+    margin: 1rem 0 0.5rem 0;
+  }
+  
+  /* Link List Styles */
+  .link-list {
+    list-style: none;
+  }
+  
+  .link-list li {
+    margin-bottom: 0.5rem;
+  }
+  
+  .link-list a {
+    display: block;
+    padding: 0.75rem 1rem;
+    color: var(--dark-color);
+    text-decoration: none;
+    background-color: #f0f0f0;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+  }
+  
+  .link-list a:hover {
+    background-color: var(--primary-color);
+    color: white;
+    transform: translateX(5px);
+  }
+  
+  /* Responsive Adjustments */
+  @media (max-width: 768px) {
+    .shop-container {
+      grid-template-columns: 1fr;
+    }
+    
+    header h1 {
+      font-size: 2rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    body {
+      padding: 10px;
+    }
+    
+    header {
+      padding: 1.5rem 0;
+    }
+    
+    section {
+      padding: 1rem;
+    }
+  }
+
+  /* ========== BASE STYLES ========== */
+:root {
+    /* Shared color variables */
+    --primary-food: #e63946;
+    --primary-drink: #3a86ff;
+    --secondary-food: #457b9d;
+    --secondary-drink: #8338ec;
+    --accent-food: #a8dadc;
+    --accent-drink: #ff006e;
+    --light: #f8f9fa;
+    --dark: #212529;
+    --text: #2b2d42;
+    --text-light: #6c757d;
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  }
+  
+  /* Shared base styles */
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: var(--text);
+    background-color: #f5f7fa;
+    padding-bottom: 40px;
+  }
+  
+  /* ========== SHARED MENU COMPONENTS ========== */
+  .menu-header {
+    color: white;
+    padding: 3rem 1rem;
+    text-align: center;
+    margin-bottom: 3rem;
+    box-shadow: var(--shadow);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .menu-header::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+    transform: rotate(30deg);
+  }
+  
+  .menu-header h1 {
+    font-size: 2.8rem;
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+    position: relative;
+  }
+  
+  .menu-header p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    max-width: 700px;
+    margin: 0 auto;
+    position: relative;
+  }
+  
+  .category-section {
+    max-width: 1200px;
+    margin: 0 auto 4rem;
+    padding: 0 20px;
+  }
+  
+  .category-title {
+    text-align: center;
+    margin: 3rem 0;
+    position: relative;
+    color: var(--dark);
+  }
+  
+  .category-title h2 {
+    display: inline-block;
+    font-size: 1.8rem;
+    padding: 0 25px;
+    background: #f5f7fa;
+    position: relative;
+    z-index: 1;
+    font-weight: 600;
+  }
+  
+  .category-title::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(to right, transparent, var(--primary-food), transparent);
+    z-index: 0;
+  }
+  
+  /* Food-specific gradient */
+  .food-menu .menu-header,
+  .food-menu .category-title::after {
+    background: linear-gradient(135deg, var(--primary-food), var(--dark));
+  }
+  
+  /* Drink-specific gradient */
+  .drink-menu .menu-header,
+  .drink-menu .category-title::after {
+    background: linear-gradient(135deg, var(--primary-drink), var(--secondary-drink));
+  }
+  
+  /* ========== FOOD CARD STYLES ========== */
+  .food-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 25px;
+    padding: 0 10px;
+  }
+  
+  .food-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+    position: relative;
+  }
+  
+  .food-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+  }
+  
+  .food-card__content {
+    padding: 20px;
+  }
+  
+  /* ========== DRINK CARD STYLES ========== */
+  .drink-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 30px;
+    padding: 0 15px;
+  }
+  
+  .drink-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+    position: relative;
+  }
+  
+  .glass-icon {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    color: rgba(58, 134, 255, 0.1);
+    font-size: 3rem;
+    z-index: 0;
+  }
+  
+  /* ========== SHARED CARD COMPONENTS ========== */
+  .food-card__content,
+  .drink-card__content {
+    padding: 25px;
+    position: relative;
+  }
+  
+  .food-card h3,
+  .drink-card h3 {
+    font-size: 1.4rem;
+    color: var(--dark);
+    margin-bottom: 12px;
+    font-weight: 600;
+  }
+  
+  .ingredients {
+    color: var(--text-light);
+    font-size: 0.95rem;
+    margin-bottom: 20px;
+    line-height: 1.5;
+    min-height: 60px;
+  }
+  
+  .price-tag {
+    display: inline-flex;
+    align-items: center;
+    background: var(--light);
+    color: var(--primary-food);
+    padding: 8px 18px;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+    box-shadow: inset 0 0 0 1px rgba(58, 134, 255, 0.2);
+  }
+  
+  .drink-card .price-tag {
+    color: var(--primary-drink);
+  }
+  
+  .allergens {
+    border-top: 1px dashed #eee;
+    padding-top: 15px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .allergens-label {
+    font-size: 0.85rem;
+    color: var(--text-light);
+    margin-right: 8px;
+  }
+  
+  .allergen-tag {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background-color: #fff5f5;
+    color: #dc3545;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: var(--transition);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    position: relative;
+  }
+  
+  .allergen-tag:hover {
+    transform: scale(1.15);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .allergen-tag .tooltip {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    background: var(--dark);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease;
+    z-index: 10;
+    pointer-events: none;
+  }
+  
+  .allergen-tag:hover .tooltip {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(5px);
+  }
+  
+  .no-allergens {
+    font-size: 0.85rem;
+    color: var(--text-light);
+    font-style: italic;
+  }
+  
+  /* ========== ANIMATIONS ========== */
+  @keyframes fadeInUp {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .food-card,
+  .drink-card {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.5s forwards;
+  }
+  
+  /* Animation delays for cards */
+  .food-card:nth-child(1),
+  .drink-card:nth-child(1) { animation-delay: 0.1s; }
+  .food-card:nth-child(2),
+  .drink-card:nth-child(2) { animation-delay: 0.2s; }
+  .food-card:nth-child(3),
+  .drink-card:nth-child(3) { animation-delay: 0.3s; }
+  .food-card:nth-child(4),
+  .drink-card:nth-child(4) { animation-delay: 0.4s; }
+  .food-card:nth-child(5),
+  .drink-card:nth-child(5) { animation-delay: 0.5s; }
+  .food-card:nth-child(6),
+  .drink-card:nth-child(6) { animation-delay: 0.6s; }
+  
+  /* ========== RESPONSIVE ADJUSTMENTS ========== */
+  @media (max-width: 768px) {
+    .menu-header h1 {
+      font-size: 2.2rem;
+    }
+    
+    .food-grid,
+    .drink-grid {
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    }
+    
+    .category-title h2 {
+      font-size: 1.5rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .menu-header {
+      padding: 2rem 1rem;
+    }
+    
+    .menu-header h1 {
+      font-size: 1.8rem;
+    }
+    
+    .food-card__content,
+    .drink-card__content {
+      padding: 20px;
+    }
+  }
+
+  /* ========== WINE-SPECIFIC STYLES ========== */
+.wine-menu .menu-header,
+.wine-menu .category-title::after {
+  background: linear-gradient(135deg, #6a0dad, #4b0082);
+}
+
+.wine-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 30px;
+  padding: 0 15px;
+}
+
+.wine-card {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  transition: var(--transition);
+  position: relative;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.5s forwards;
+}
+
+.wine-card:hover {
+  transform: translateY(-5px) !important;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
+}
+
+.wine-card__content {
+  padding: 25px;
+  position: relative;
+}
+
+.bottle-icon {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  color: rgba(106, 13, 173, 0.1);
+  font-size: 3rem;
+  z-index: 0;
+}
+
+.origin {
+  color: var(--text-light);
+  font-size: 0.95rem;
+  margin-bottom: 20px;
+  line-height: 1.5;
+  min-height: 40px;
+}
+
+.price-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 12px;
+  margin-top: 15px;
+}
+
+.price-option {
+  background: var(--light);
+  border-radius: 8px;
+  padding: 10px;
+  text-align: center;
+  box-shadow: inset 0 0 0 1px rgba(106, 13, 173, 0.1);
+}
+
+.price-option.highlight {
+  background: linear-gradient(135deg, #f3e5ff, #ffffff);
+  box-shadow: inset 0 0 0 1px rgba(106, 13, 173, 0.3);
+}
+
+.price-option .size {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--text-light);
+  margin-bottom: 4px;
+}
+
+.price-option .price {
+  display: block;
+  font-weight: bold;
+  color: #6a0dad;
+}
+
+.price-option.highlight .price {
+  color: #4b0082;
+  font-size: 1.1rem;
+}
+
+/* Animation delays for wine cards */
+.wine-card:nth-child(1) { animation-delay: 0.1s; }
+.wine-card:nth-child(2) { animation-delay: 0.2s; }
+.wine-card:nth-child(3) { animation-delay: 0.3s; }
+.wine-card:nth-child(4) { animation-delay: 0.4s; }
+.wine-card:nth-child(5) { animation-delay: 0.5s; }
+.wine-card:nth-child(6) { animation-delay: 0.6s; }
+
+/* ========== BASKET STYLES ========== */
+.basket-menu .menu-header {
+    background: linear-gradient(135deg, var(--primary-food), var(--dark));
+  }
+  
+  .basket-container {
+    max-width: 1000px;
+    margin: 2rem auto;
+    padding: 0 20px;
+  }
+  
+  .basket-header {
+    background: linear-gradient(135deg, var(--primary-food), var(--dark));
+    color: white;
+    padding: 2rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow);
+    text-align: center;
+  }
+  
+  .basket-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 2rem 0;
+  }
+  
+  .basket-table thead {
+    background: var(--dark);
+    color: white;
+  }
+  
+  .basket-table th {
+    padding: 15px;
+    text-align: left;
+    font-weight: 500;
+  }
+  
+  .basket-table td {
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    vertical-align: middle;
+  }
+  
+  .basket-table tr:last-child td {
+    border-bottom: none;
+  }
+  
+  .quantity-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .quantity-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: none;
+    background: var(--light);
+    color: var(--dark);
+    font-weight: bold;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .quantity-btn:hover {
+    background: var(--primary-food);
+    color: white;
+  }
+  
+  .remove-btn {
+    background: #ff6b6b;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: var(--transition);
+    font-size: 0.9rem;
+  }
+  
+  .remove-btn:hover {
+    background: #dc3545;
+    transform: translateY(-2px);
+  }
+  
+  .total-section {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    text-align: right;
+    margin-top: 2rem;
+  }
+  
+  .total-amount {
+    font-size: 1.5rem;
+    color: var(--primary-food);
+    font-weight: bold;
+    margin-top: 10px;
+  }
+  
+  .checkout-btn {
+    background: var(--primary-food);
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 30px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: var(--transition);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  }
+  
+  .checkout-btn:hover {
+    background: var(--dark);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  }
+  
+  .empty-basket {
+    text-align: center;
+    padding: 4rem 0;
+  }
+  
+  .empty-basket i {
+    font-size: 3rem;
+    color: var(--text-light);
+    margin-bottom: 1rem;
+  }
+  
+  .empty-basket a {
+    color: var(--primary-food);
+    text-decoration: none;
+    font-weight: bold;
+    border-bottom: 2px solid var(--primary-food);
+    transition: var(--transition);
+  }
+  
+  .empty-basket a:hover {
+    color: var(--dark);
+    border-color: var(--dark);
+  }
+  
+  /* Basket Animations */
+  .fadeInUp {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.5s forwards;
+  }
+  
+  /* Responsive Basket */
+  @media (max-width: 768px) {
+    .basket-table thead {
+      display: none;
+    }
+    
+    .basket-table tr {
+      display: block;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    
+    .basket-table td {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 15px;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .basket-table td::before {
+      content: attr(data-label);
+      font-weight: bold;
+      margin-right: 15px;
+      color: var(--dark);
+    }
+    
+    .quantity-control {
+      margin-left: auto;
+    }
+  }
+  /* ========== COMBINED MENU STYLES ========== */
+.combined-menu .menu-header {
+    background: linear-gradient(135deg, #6a0dad, #4b0082);
+  }
+  
+  .menu-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px 40px;
+  }
+  
+  .menu-section {
+    margin-bottom: 40px;
+  }
+  
+  .category-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 25px;
+    margin-top: 20px;
+  }
+  
+  .menu-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.5s forwards;
+  }
+  
+  .menu-card:hover {
+    transform: translateY(-5px) !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  }
+  
+  .card-content {
+    padding: 20px;
+    position: relative;
+  }
+  
+  .menu-card h3 {
+    font-size: 1.3rem;
+    color: var(--dark);
+    margin-bottom: 10px;
+  }
+  
+  .description {
+    color: var(--text-light);
+    font-size: 0.95rem;
+    margin-bottom: 15px;
+    line-height: 1.5;
+    min-height: 60px;
+  }
+  
+  .card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+  }
+  
+  .price {
+    font-weight: bold;
+    font-size: 1.2rem;
+    color: var(--primary-food);
+  }
+  
+  .drink-card .price {
+    color: var(--primary-drink);
+  }
+  
+  .add-btn {
+    background: var(--dark);
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  
+  .add-btn:hover {
+    background: var(--primary-food);
+    transform: translateY(-2px);
+  }
+  
+  .drink-card .add-btn:hover {
+    background: var(--primary-drink);
+  }
+  
+  /* Floating basket button */
+  .basket-floating {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 100;
+  }
+  
+  .basket-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--primary-food);
+    color: white;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    transition: var(--transition);
+    position: relative;
+    font-size: 1.2rem;
+  }
+  
+  .basket-btn:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  }
+  
+  .basket-count {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #ff6b6b;
+    color: white;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: bold;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .category-grid {
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    }
+    
+    .basket-floating {
+      bottom: 20px;
+      right: 20px;
+    }
+    
+    .basket-btn {
+      width: 50px;
+      height: 50px;
+      font-size: 1rem;
+    }
+  }
+  
+  /* Animation delays for menu items */
+  .menu-card:nth-child(1) { animation-delay: 0.1s; }
+  .menu-card:nth-child(2) { animation-delay: 0.2s; }
+  .menu-card:nth-child(3) { animation-delay: 0.3s; }
+  .menu-card:nth-child(4) { animation-delay: 0.4s; }
+  .menu-card:nth-child(5) { animation-delay: 0.5s; }
+  .menu-card:nth-child(6) { animation-delay: 0.6s; }
+
+  /* Wine Card Styles */
+.wine-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+  
+  .wine-card .description {
+    font-style: italic;
+    color: #6a0dad;
+  }
+  
+  .price-options {
+    display: grid;
+    gap: 10px;
+    margin: 15px 0;
+  }
+  
+  .price-option {
+    background: #f9f0ff;
+    padding: 10px;
+    border-radius: 8px;
+    text-align: center;
+  }
+  
+  .price-option.highlight {
+    background: linear-gradient(135deg, #f3e5ff, #ffffff);
+    box-shadow: inset 0 0 0 1px rgba(106, 13, 173, 0.3);
+  }
+  
+  .price-option .size {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--text-light);
+  }
+  
+  .price-option .price {
+    display: block;
+    font-weight: bold;
+    color: #6a0dad;
+  }
+  
+  .price-option.highlight .price {
+    font-size: 1.1rem;
+  }
+  
+  .wine-card .card-footer {
+    display: flex;
+    gap: 10px;
+    justify-content: space-between;
+  }
+  
+  .wine-card .add-btn {
+    flex: 1;
+    padding: 8px 10px;
+    font-size: 0.85rem;
+  }
+  
+  /* Wine section header color */
+  .combined-menu .menu-header {
+    background: linear-gradient(135deg, #6a0dad, #4b0082);
+  }

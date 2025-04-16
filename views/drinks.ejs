@@ -3,156 +3,78 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Drink Menu</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-    }
-
-    h1 {
-      text-align: center;
-      margin-top: 20px;
-    }
-
-    h2 {
-      margin-top: 40px;
-      text-align: center;
-      font-size: 1.5em;
-    }
-
-    .category-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-      gap: 20px;
-      padding: 20px;
-      justify-content: center;
-      justify-items: center;
-    }
-
-    .drink-card {
-      background-color: #fff;
-      border-radius: 8px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-      padding: 15px;
-      width: 250px;
-      text-align: center;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-
-    .drink-card:hover {
-      transform: translateY(-10px);
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-    }
-
-    .drink-card h3 {
-      font-size: 1.3em;
-      margin-bottom: 10px;
-    }
-
-    .drink-card p {
-      margin-bottom: 10px;
-      font-size: 0.9em;
-      color: #555;
-    }
-
-    .price-box {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 10px;
-      margin-top: 10px;
-    }
-
-    .price-box span {
-      display: block;
-      padding: 6px;
-      background-color: #f4f4f4;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-      text-align: center;
-      font-weight: bold;
-    }
-
-    .price-box span:empty {
-      display: none;
-    }
-
-    /* Allergen symbol styles */
-    .allergen-symbol {
-      display: inline-block;
-      width: 24px;
-      height: 24px;
-      text-align: center;
-      line-height: 24px;
-      border-radius: 50%;
-      background-color: #f8d7da;
-      color: #721c24;
-      font-size: 12px;
-      font-weight: bold;
-      margin-right: 5px;
-      position: relative;
-      cursor: pointer;
-    }
-
-    .tooltip {
-      display: none;
-      position: absolute;
-      top: 30px;
-      left: 50%;
-      transform: translateX(-50%);
-      background-color: #333;
-      color: #fff;
-      padding: 5px 10px;
-      border-radius: 5px;
-      font-size: 12px;
-      white-space: nowrap;
-    }
-
-    .allergen-symbol:hover .tooltip {
-      display: block;
-    }
-
-    /* Responsive grid for smaller screens */
-    @media (max-width: 768px) {
-      .category-container {
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link rel="stylesheet" type="text/css" href="/main.css">
+  <title>Drinks Menu</title>
 </head>
 <body>
-  <h1>Drink Menu</h1>
+  <header class="menu-header">
+    <h1>Drink Menu</h1>
+    <!-- <p>Handcrafted beverages made with premium ingredients</p> -->
+  </header>
 
-  <% Object.keys(groupedDrinks).forEach(category => { %>
-    <h2><%= category %></h2>
-    <div class="category-container">
-      <% groupedDrinks[category].forEach(drink => { %>
-        <div class="drink-card">
-          <h3><%= drink.name %></h3>
-          <p><strong>Ingredients:</strong> <%= drink.ingredients %></p>
-          
-          <div class="price-box">
-            <span>£<%= drink.price %></span>
-          </div>
+  <% Object.keys(groupedDrinks).forEach((category, catIndex) => { %>
+    <section class="category-section">
+      <div class="category-title">
+        <h2><%= category %></h2>
+      </div>
+      
+      <div class="drink-grid">
+        <% groupedDrinks[category].forEach((drink, drinkIndex) => { %>
+          <article class="drink-card" style="animation-delay: <%= 0.1 + (drinkIndex * 0.1) %>s">
+            <i class="fas fa-glass-whiskey glass-icon"></i>
+            <div class="drink-card__content">
+              <h3><%= drink.name %></h3>
+              <p class="ingredients"><strong>Ingredients:</strong> <%= drink.ingredients %></p>
+              
+              <div class="price-tag">£<%= drink.price %></div>
 
-          <p>Allergens: 
-            <% if (drink.allergens && drink.allergens.length > 0) { %>
-              <% drink.allergens.forEach(allergen => { %>
-                <% if (allergen) { %>
-                  <span class="allergen-symbol">
-                    <%= allergen[0].toUpperCase() %>
-                    <span class="tooltip"><%= allergen %></span>
-                  </span>
+              <div class="allergens">
+                <span class="allergens-label">Allergens:</span>
+                <% if (drink.allergens && drink.allergens.length > 0) { %>
+                  <% drink.allergens.forEach(allergen => { %>
+                    <% if (allergen) { %>
+                      <span class="allergen-tag">
+                        <%= allergen[0].toUpperCase() %>
+                        <span class="tooltip"><%= allergen %></span>
+                      </span>
+                    <% } %>
+                  <% }) %>
+                <% } else { %>
+                  <span class="no-allergens">None</span>
                 <% } %>
-              <% }) %>
-            <% } else { %>
-              None
-            <% } %>
-          </p>
-        </div>
-      <% }) %>
-    </div>
+              </div>
+            </div>
+          </article>
+        <% }) %>
+      </div>
+    </section>
   <% }) %>
+
+  <script>
+    // Add smooth scroll behavior
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        document.querySelector(this.getAttribute('href')).scrollIntoView({
+          behavior: 'smooth'
+        });
+      });
+    });
+
+    // Animate cards when they come into view
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.animationPlayState = 'running';
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.drink-card').forEach(card => {
+      observer.observe(card);
+      card.style.animationPlayState = 'paused';
+    });
+  </script>
 </body>
 </html>

@@ -3,52 +3,213 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Add Menu Item</title>
-  <script>
-    function updateSubcategories() {
-      const category = document.getElementById("category").value;
-      const subcategory = document.getElementById("subcategory");
-      subcategory.innerHTML = ""; // Clear previous options
-
-      // Get the subcategories from a data attribute
-      const subcategories = JSON.parse(subcategory.dataset.subcategories);
-
-      const options = subcategories[category] || [];
-      options.forEach(option => {
-        const opt = document.createElement("option");
-        opt.value = option;
-        opt.textContent = option;
-        subcategory.appendChild(opt);
-      });
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link rel="stylesheet" href="/css/menu.css">
+  <title>Add Menu Item | BitePair</title>
+  <style>
+    /* Form-specific styles */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f5f7fa;
+      padding: 20px;
+      max-width: 800px;
+      margin: 0 auto;
     }
-  </script>
+    
+    h1 {
+      color: #2b2d42;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    form {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    
+    label {
+      display: block;
+      margin: 15px 0 5px;
+      font-weight: 500;
+      color: #2b2d42;
+    }
+    
+    select, input, textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 16px;
+      margin-bottom: 15px;
+      transition: all 0.3s ease;
+    }
+    
+    select:focus, input:focus, textarea:focus {
+      border-color: #3a86ff;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(58, 134, 255, 0.2);
+    }
+    
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+    
+    button[type="submit"] {
+      background: #3a86ff;
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      border-radius: 30px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 20px;
+      transition: all 0.3s ease;
+      width: 100%;
+    }
+    
+    button[type="submit"]:hover {
+      background: #2667cc;
+      transform: translateY(-2px);
+    }
+    
+    .form-row {
+      display: flex;
+      gap: 20px;
+    }
+    
+    .form-group {
+      flex: 1;
+    }
+    
+    /* Wine-specific fields (initially hidden) */
+    .wine-fields {
+      display: none;
+    }
+  </style>
 </head>
 <body>
   <h1>Add Menu Item</h1>
-  <form action="added" method="POST">
-    <label for="category">Category:</label>
-    <select name="category" id="category" onchange="updateSubcategories()" required>
-      <option value="">Select a category</option>
-      <option value="food">Food</option>
-      <option value="drinks">Drinks</option>
-    </select>
-
-    <label for="subcategory">Subcategory:</label>
-    <select name="subcategory" id="subcategory" data-subcategories='
-      <%= JSON.stringify(subcategories) %>' required>
-      <!-- Options will be dynamically added here -->
-    </select>
+  <form action="/menu/add" method="POST">
+    <div class="form-row">
+      <div class="form-group">
+        <label for="category">Category:</label>
+        <select name="category" id="category" onchange="updateFormFields()" required>
+          <option value="">Select a category</option>
+          <option value="food">Food</option>
+          <option value="drinks">Drinks</option>
+          <option value="wines">Wines</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="subcategory">Subcategory:</label>
+        <select name="subcategory" id="subcategory" data-subcategories='<%= JSON.stringify(subcategories) %>' required>
+          <option value="">Select a subcategory</option>
+        </select>
+      </div>
+    </div>
 
     <label for="name">Name:</label>
     <input type="text" id="name" name="name" placeholder="Enter item name" required>
 
-    <label for="price">Price (£):</label>
-    <input type="number" id="price" name="price" step="0.01" placeholder="Enter price" required>
+    <div id="standardFields">
+      <label for="price">Price (£):</label>
+      <input type="number" id="price" name="price" step="0.01" placeholder="0.00" required>
 
-    <label for="ingredients">Ingredients:</label>
-    <textarea id="ingredients" name="ingredients" placeholder="List ingredients separated by commas" required></textarea>
+      <label for="description">Description:</label>
+      <textarea id="description" name="description" placeholder="Enter item description"></textarea>
+
+      <label for="ingredients">Ingredients:</label>
+      <textarea id="ingredients" name="ingredients" placeholder="List ingredients separated by commas"></textarea>
+    </div>
+
+    <div id="wineFields" class="wine-fields">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="origin">Origin:</label>
+          <input type="text" id="origin" name="origin" placeholder="Country/Region">
+        </div>
+        
+        <div class="form-group">
+          <label for="vintage">Vintage:</label>
+          <input type="number" id="vintage" name="vintage" placeholder="Year" min="1900" max="<%= new Date().getFullYear() %>">
+        </div>
+      </div>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label for="glass_price">Glass Price (£):</label>
+          <input type="number" id="glass_price" name="glass_price" step="0.01" placeholder="0.00">
+        </div>
+        
+        <div class="form-group">
+          <label for="bottle_price">Bottle Price (£):</label>
+          <input type="number" id="bottle_price" name="bottle_price" step="0.01" placeholder="0.00">
+        </div>
+      </div>
+    </div>
+
+    <label for="allergens">Allergens (select multiple):</label>
+    <select id="allergens" name="allergens" multiple>
+      <% allergens.forEach(allergen => { %>
+        <option value="<%= allergen.id %>"><%= allergen.name %></option>
+      <% }) %>
+    </select>
 
     <button type="submit">Add Item</button>
   </form>
+
+  <script>
+    // Update subcategories and form fields based on category selection
+    function updateFormFields() {
+      const category = document.getElementById("category").value;
+      const subcategory = document.getElementById("subcategory");
+      const standardFields = document.getElementById("standardFields");
+      const wineFields = document.getElementById("wineFields");
+      
+      // Reset subcategories
+      subcategory.innerHTML = '<option value="">Select a subcategory</option>';
+      
+      // Show/hide wine-specific fields
+      if (category === 'wines') {
+        standardFields.style.display = 'none';
+        wineFields.style.display = 'block';
+      } else {
+        standardFields.style.display = 'block';
+        wineFields.style.display = 'none';
+      }
+      
+      // Update subcategories
+      if (category) {
+        const subcategories = JSON.parse(subcategory.dataset.subcategories);
+        const options = subcategories[category] || [];
+        
+        options.forEach(option => {
+          const opt = document.createElement("option");
+          opt.value = option;
+          opt.textContent = option;
+          subcategory.appendChild(opt);
+        });
+      }
+    }
+
+    // Initialize form fields on page load
+    document.addEventListener("DOMContentLoaded", function() {
+      // Make allergens select more user-friendly
+      const allergenSelect = document.getElementById("allergens");
+      allergenSelect.size = Math.min(5, allergenSelect.options.length);
+      allergenSelect.multiple = true;
+      
+      // Initialize subcategories if a category is already selected
+      const categorySelect = document.getElementById("category");
+      if (categorySelect.value) {
+        updateFormFields();
+      }
+    });
+  </script>
 </body>
 </html>

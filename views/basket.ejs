@@ -3,60 +3,105 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Your Basket</title>
-  <style>
-    body { font-family: Arial, sans-serif; text-align: center; }
-    table { width: 80%; margin: auto; border-collapse: collapse; }
-    th, td { border: 1px solid #ddd; padding: 8px; }
-    .button { background: green; color: white; border: none; padding: 5px 10px; cursor: pointer; }
-    .remove { background: red; }
-  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link rel="stylesheet" type="text/css" href="/main.css">
+  <title>Your Basket | BitePair</title>
 </head>
-<body>
-  <h1>Your Basket</h1>
+<body class="basket-menu">
+  <div class="basket-container">
+    <header class="basket-header">
+      <h1>Your Basket</h1>
+      <p>Review your selections before checkout</p>
+    </header>
 
-  <% if (basket.length > 0) { %>
-    <table>
-      <tr>
-        <th>Item</th>
-        <th>Quantity</th>
-        <th>Price</th>
-        <th>Total</th>
-        <th>Actions</th>
-      </tr>
-      <% basket.forEach(item => { %>
-      <tr>
-        <td><%= item.name %></td>
-        <td><%= item.quantity %></td>
-        <td>£<%= item.price.toFixed(2) %></td>
-        <td>£<%= (item.quantity * item.price).toFixed(2) %></td>
-        <td>
-          <button class="button plus" data-id="<%= item.id %>">+</button>
-          <button class="button minus" data-id="<%= item.id %>">-</button>
-          <button class="button remove" data-id="<%= item.id %>">Remove</button>
-        </td>
-      </tr>
-      <% }) %>
-    </table>
-    <h2>Total: £<%= basket.reduce((sum, item) => sum + item.price * item.quantity, 0).toFixed(2) %></h2>
-  <% } else { %>
-    <p>Your basket is empty. <a href="/">Go back</a>.</p>
-  <% } %>
+    <% if (basket.length > 0) { %>
+      <table class="basket-table">
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>Total</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% basket.forEach(item => { %>
+          <tr>
+            <td><%= item.name %></td>
+            <td>
+              <div class="quantity-control">
+                <button class="quantity-btn minus" data-id="<%= item.id %>">-</button>
+                <span><%= item.quantity %></span>
+                <button class="quantity-btn plus" data-id="<%= item.id %>">+</button>
+              </div>
+            </td>
+            <td>£<%= item.price.toFixed(2) %></td>
+            <td>£<%= (item.quantity * item.price).toFixed(2) %></td>
+            <td>
+              <button class="remove-btn" data-id="<%= item.id %>">
+                <i class="fas fa-trash-alt"></i> Remove
+              </button>
+            </td>
+          </tr>
+          <% }) %>
+        </tbody>
+      </table>
+
+      <div class="total-section">
+        <h3>Subtotal</h3>
+        <div class="total-amount">£<%= basket.reduce((sum, item) => sum + item.price * item.quantity, 0).toFixed(2) %></div>
+        <button class="checkout-btn">
+          <i class="fas fa-credit-card"></i> Proceed to Checkout
+        </button>
+      </div>
+    <% } else { %>
+      <div class="empty-basket">
+        <i class="fas fa-shopping-basket"></i>
+        <h2>Your basket is empty</h2>
+        <p>Start adding delicious items from our <a href="/">menu</a></p>
+      </div>
+    <% } %>
+  </div>
 
   <script>
     document.addEventListener("click", async (e) => {
-      if (e.target.classList.contains("plus") || e.target.classList.contains("minus") || e.target.classList.contains("remove")) {
-        const change = e.target.classList.contains("plus") ? 1 : e.target.classList.contains("minus") ? -1 : 0;
-        const id = e.target.dataset.id;
+      if (e.target.classList.contains("plus") || 
+          e.target.closest(".plus") || 
+          e.target.classList.contains("minus") || 
+          e.target.closest(".minus") || 
+          e.target.classList.contains("remove-btn") || 
+          e.target.closest(".remove-btn")) {
+        
+        const plusBtn = e.target.classList.contains("plus") ? e.target : e.target.closest(".plus");
+        const minusBtn = e.target.classList.contains("minus") ? e.target : e.target.closest(".minus");
+        const removeBtn = e.target.classList.contains("remove-btn") ? e.target : e.target.closest(".remove-btn");
+        
+        const change = plusBtn ? 1 : minusBtn ? -1 : 0;
+        const id = plusBtn?.dataset.id || minusBtn?.dataset.id || removeBtn?.dataset.id;
 
-        await fetch(`/basket/${change ? "update" : "remove"}`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id, change }),
-        });
+        try {
+          const response = await fetch(`/basket/${change ? "update" : "remove"}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id, change }),
+          });
 
-        location.reload();
+          if (response.ok) {
+            location.reload();
+          } else {
+            console.error("Error updating basket");
+          }
+        } catch (error) {
+          console.error("Network error:", error);
+        }
       }
+    });
+
+    // Add animation to basket items
+    document.querySelectorAll('.basket-table tbody tr').forEach((row, index) => {
+      row.style.animationDelay = `${index * 0.1}s`;
+      row.classList.add('fadeInUp');
     });
   </script>
 </body>

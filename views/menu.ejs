@@ -3,57 +3,200 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Menu</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link rel="stylesheet" type="text/css" href="/main.css">
+  <title>Our Menu | BitePair</title>
 </head>
-<body>
-  <h1>Menu</h1>
+<body class="combined-menu">
+  <header class="menu-header">
+    <h1>Our Menu</h1>
+    <p>Delicious food, refreshing drinks, and fine wines</p>
+  </header>
 
-  <!-- food -->
-    <h2>Food</h2>
-    <div class="category-container">
-      <% food.forEach(item => { %>
-        <div class="food-card">
-          <h3><%= item.name %></h3>
-          <p><%= item.description %></p>
-          <p><%= item.price %></p>
-          <p><%= item.allergens %></p>
-          <button class="button add" data-id="<%= item.id %>">Add to Basket</button>
+  <main class="menu-container">
+    <!-- Food Section -->
+    <section class="menu-section">
+      <div class="category-title">
+        <h2><i class="fas fa-utensils"></i> Food</h2>
+      </div>
+      <div class="category-grid">
+        <% food.forEach(item => { %>
+          <article class="menu-card food-card">
+            <div class="card-content">
+              <h3><%= item.name %></h3>
+              <p class="description"><%= item.description || '' %></p>
+              
+              <% if (item.allergens && item.allergens.length > 0) { %>
+                <div class="allergens">
+                  <span class="allergens-label">Allergens:</span>
+                  <% item.allergens.forEach(allergen => { %>
+                    <% if (allergen) { %>
+                      <span class="allergen-tag" data-allergen="<%= allergen %>">
+                        <%= allergen[0].toUpperCase() %>
+                        <span class="tooltip"><%= allergen %></span>
+                      </span>
+                    <% } %>
+                  <% }) %>
+                </div>
+              <% } %>
+              
+              <div class="card-footer">
+                <span class="price">£<%= Number(item.price).toFixed(2) %></span>
+                <button class="add-btn" data-id="<%= item.id %>" 
+                        data-name="<%= item.name %>" 
+                        data-price="<%= item.price %>">
+                  <i class="fas fa-plus"></i> Add to Basket
+                </button>
+              </div>
+            </div>
+          </article>
+        <% }) %>
+      </div>
+    </section>
+
+    <!-- Drinks Section -->
+    <section class="menu-section">
+      <div class="category-title">
+        <h2><i class="fas fa-glass-whiskey"></i> Drinks</h2>
+      </div>
+      <div class="category-grid">
+        <% drinks.forEach(item => { %>
+          <article class="menu-card drink-card">
+            <div class="card-content">
+              <h3><%= item.name %></h3>
+              <p class="description"><%= item.description || '' %></p>
+              
+              <div class="card-footer">
+                <span class="price">£<%= Number(item.price).toFixed(2) %></span>
+                <button class="add-btn" data-id="<%= item.id %>"
+                        data-name="<%= item.name %>" 
+                        data-price="<%= item.price %>">
+                  <i class="fas fa-plus"></i> Add to Basket
+                </button>
+              </div>
+            </div>
+          </article>
+        <% }) %>
+      </div>
+    </section>
+
+    <!-- Wine Section -->
+    <% if (wine && wine.length > 0) { %>
+      <section class="menu-section">
+        <div class="category-title">
+          <h2><i class="fas fa-wine-bottle"></i> Wine</h2>
         </div>
-      <% }) %>
-
-    <!-- drinks -->
-    <h2>Drinks</h2>
-    <div class="category-container">
-      <% drinks.forEach(item => { %>
-        <div class="drink-card">
-          <h3><%= item.name %></h3>
-          <p><%= item.description %></p>
-          <p><%= item.price %></p>
-          <button class="button add" data-id="<%= item.id %>">Add to Basket</button>
+        <div class="category-grid">
+          <% wine.forEach(item => { %>
+            <article class="menu-card wine-card">
+              <div class="card-content">
+                <h3><%= item.name %></h3>
+                <p class="description"><%= item.origin %></p>
+                
+                <div class="price-options">
+                  <% if (item.glass_price) { %>
+                    <div class="price-option">
+                      <span class="size">Glass</span>
+                      <span class="price">£<%= Number(item.glass_price).toFixed(2) %></span>
+                    </div>
+                  <% } %>
+                  <% if (item.bottle_price) { %>
+                    <div class="price-option highlight">
+                      <span class="size">Bottle</span>
+                      <span class="price">£<%= Number(item.bottle_price).toFixed(2) %></span>
+                    </div>
+                  <% } %>
+                </div>
+                
+                <div class="card-footer">
+                  <% if (item.glass_price) { %>
+                    <button class="add-btn" data-id="<%= item.id %>" 
+                            data-name="<%= item.name %> (Glass)" 
+                            data-price="<%= item.glass_price %>">
+                      <i class="fas fa-plus"></i> Add Glass
+                    </button>
+                  <% } %>
+                  <% if (item.bottle_price) { %>
+                    <button class="add-btn" data-id="<%= item.id %>_bottle"
+                            data-name="<%= item.name %> (Bottle)" 
+                            data-price="<%= item.bottle_price %>">
+                      <i class="fas fa-plus"></i> Add Bottle
+                    </button>
+                  <% } %>
+                </div>
+              </div>
+            </article>
+          <% }) %>
         </div>
-      <% }) %>
-    </div>
+      </section>
+    <% } %>
+  </main>
 
-<script>
-  document.addEventListener("click", async (e) => {
-    if (e.target.classList.contains("add")) {
-      const id = e.target.dataset.id;
-      const name = e.target.closest("div").querySelector("h3").innerText;
-      const price = parseFloat(e.target.closest("div").querySelector("p:nth-of-type(2)").innerText);
+  <div class="basket-floating">
+    <a href="/basket" class="basket-btn">
+      <i class="fas fa-shopping-basket"></i>
+      <span class="basket-count">0</span>
+    </a>
+  </div>
 
+  <script>
+    // Add to basket functionality
+    document.addEventListener("click", async (e) => {
+      const addBtn = e.target.closest(".add-btn");
+      if (addBtn) {
+        const id = addBtn.dataset.id;
+        const name = addBtn.dataset.name;
+        const price = parseFloat(addBtn.dataset.price);
+
+        try {
+          const response = await fetch("/basket/add", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id, name, price }),
+          });
+
+          if (response.ok) {
+            // Visual feedback
+            const originalHtml = addBtn.innerHTML;
+            addBtn.innerHTML = '<i class="fas fa-check"></i> Added!';
+            addBtn.style.backgroundColor = '#4CAF50';
+            
+            // Update basket count
+            updateBasketCount();
+            
+            // Reset button after 1.5 seconds
+            setTimeout(() => {
+              addBtn.innerHTML = originalHtml;
+              addBtn.style.backgroundColor = '';
+            }, 1500);
+          }
+        } catch (error) {
+          console.error("Error adding to basket:", error);
+        }
+      }
+    });
+
+    // Update basket count
+    async function updateBasketCount() {
       try {
-        const response = await fetch("/basket/add", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id, name, price }),
-        });
-
-        const result = await response.json();
-
+        const response = await fetch("/basket/count");
+        if (response.ok) {
+          const data = await response.json();
+          document.querySelector(".basket-count").textContent = data.count || 0;
+        }
       } catch (error) {
-        console.error("Error adding to basket:", error);
+        console.error("Error getting basket count:", error);
       }
     }
-  });
-</script>
+
+    // Initialize basket count on load
+    document.addEventListener("DOMContentLoaded", updateBasketCount);
+
+    // Add animations to menu items
+    document.querySelectorAll('.menu-card').forEach((card, index) => {
+      card.style.animationDelay = `${index * 0.1}s`;
+      card.classList.add('fadeInUp');
+    });
+  </script>
+</body>
 </html>

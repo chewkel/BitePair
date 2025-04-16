@@ -1,36 +1,70 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
   <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Welcome to BitePair</title>
-    <link rel="stylesheet"  type="text/css" href="/main.css" />
+    <link rel="stylesheet" type="text/css" href="/main.css">
   </head>
 
   <body>
-    <h3 id="HELLO">Welcome to BitePair</h3>
-    <div class="shop-container">
-        <h4>Users</h4>
-        <p><a href="users/users">Users</a></p>
-      <p><a href="users/login">Login</a></p>
-      <p><a href="users/register">Register an account</a></p>
-      <p><a href="users/logout">Logout</a></p>
-      <p><a href="users/edit">Edit account</a></p>
-        <h4>Menu</h4>
-        <p><a href="menu/delete" >Delete item</a></p>
-        <p><a href="menu/wine/delete" >Delete wine item</a></p>
-        <p><a href="menu/food">Food</a></p>
-        <p><a href="menu/foodtest">Food test</a></p>
-        <p><a href="menu/drinks">Drinks</a></p>
-        <p><a href="menu/drinkstest">Drinks test</a></p>
-        <p><a href="menu/wines">Wine</a></p>
-        <p><a href="menu/winetest">Wine test</a></p>
-        <p><a href="menu/add">Add item</a></p>
-        <p><a href="menu/edit">Edit menu</a></p>
-        <p><a href="menu/wine/add">Add wine item</a></p>
-        <p><a href="menu/wine/edit">Edit wine menu</a></p>
-        <h4>New additions</h4>
-        <p><a href="menu/menu">Addition</a></p>
-        <p><a href="menu/food">food menu update</a></p>
-        <p><a href="basket">basket</a></p>
-    </div>  
+    <header>
+      <h1>Welcome to BitePair</h1>
+    </header>
+
+    <main class="shop-container">
+      <section class="user-section">
+        <h2>Users</h2>
+        <ul class="link-list">
+          <li><a href="users/users">Users</a></li>
+          <li><a href="users/login">Login</a></li>
+          <li><a href="users/register">Register an account</a></li>
+          <li><a href="users/logout">Logout</a></li>
+          <li><a href="users/edit">Edit account</a></li>
+        </ul>
+      </section>
+
+      <section class="menu-section">
+        <h2>Menu</h2>
+        <div class="menu-subsection">
+          <h3>Food</h3>
+          <ul class="link-list">
+            <li><a href="menu/food">Food</a></li>
+            <li><a href="menu/foodtest">Food test</a></li>
+            <li><a href="menu/add">Add item</a></li>
+            <li><a href="menu/edit">Edit menu</a></li>
+            <li><a href="menu/delete">Delete item</a></li>
+          </ul>
+        </div>
+
+        <div class="menu-subsection">
+          <h3>Drinks</h3>
+          <ul class="link-list">
+            <li><a href="menu/drinks">Drinks</a></li>
+            <li><a href="menu/drinkstest">Drinks test</a></li>
+          </ul>
+        </div>
+
+        <div class="menu-subsection">
+          <h3>Wine</h3>
+          <ul class="link-list">
+            <li><a href="menu/wines">Wine</a></li>
+            <li><a href="menu/winetest">Wine test</a></li>
+            <li><a href="menu/wine/add">Add wine item</a></li>
+            <li><a href="menu/wine/edit">Edit wine menu</a></li>
+            <li><a href="menu/wine/delete">Delete wine item</a></li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="new-additions">
+        <h2>New Additions</h2>
+        <ul class="link-list">
+          <li><a href="menu/menu">Addition</a></li>
+          <li><a href="menu/food">Food menu update</a></li>
+          <li><a href="basket">Basket</a></li>
+        </ul>
+      </section>
+    </main>
   </body>
 </html>

@@ -15,7 +15,6 @@ function getAllergenIcon(allergen) {
     Shellfish: "fa-solid fa-shrimp",
     Sesame: "fa-solid fa-seedling",
     Gluten: "fa-solid fa-bread-slice",
-
   };
 
   return allergenIcons[allergen] || "fa-solid fa-question"; // Default icon if not found
@@ -505,7 +504,19 @@ router.get("/add", (req, res) => {
     ],
   };
 
-  res.render("add_menu.ejs", { subcategories });
+  // Basic hardcoded allergens
+  const allergens = [
+    { id: 1, name: "Gluten" },
+    { id: 2, name: "Dairy" },
+    { id: 3, name: "Nuts" },
+    { id: 4, name: "Shellfish" },
+    { id: 5, name: "Eggs" },
+  ];
+
+  res.render("add_menu.ejs", {
+    subcategories,
+    allergens,
+  });
 });
 
 router.post("/added", async (req, res) => {
@@ -644,29 +655,49 @@ router.post("/delete", async (req, res) => {
 
 router.get("/menu", async (req, res) => {
   try {
+    // Get food and drinks first (as before)
     const food = await pool.query(`
-            SELECT 
-                f.id, f.name, f.price, 
-                ARRAY_AGG(a.name) AS allergens
-            FROM food f
-            LEFT JOIN food_allergen fa ON f.id = fa.food_id
-            LEFT JOIN allergen a ON fa.allergen_id = a.id
-            GROUP BY f.id
-        `);
+      SELECT 
+        f.id, f.name, f.price, 
+        ARRAY_AGG(a.name) AS allergens
+      FROM food f
+      LEFT JOIN food_allergen fa ON f.id = fa.food_id
+      LEFT JOIN allergen a ON fa.allergen_id = a.id
+      GROUP BY f.id
+    `);
 
     const drinks = await pool.query(`
-            SELECT 
-                d.id, d.name, d.price, 
-                ARRAY_AGG(a.name) AS allergens
-            FROM drinks d
-            LEFT JOIN drink_allergen da ON d.id = da.drink_id
-            LEFT JOIN allergen a ON da.allergen_id = a.id
-            GROUP BY d.id
-        `);
+      SELECT 
+        d.id, d.name, d.price, 
+        ARRAY_AGG(a.name) AS allergens
+      FROM drinks d
+      LEFT JOIN drink_allergen da ON d.id = da.drink_id
+      LEFT JOIN allergen a ON da.allergen_id = a.id
+      GROUP BY d.id
+    `);
+
+    // Try to get wines, but don't fail if the query errors
+    let wine = [];
+    try {
+      const winesResult = await pool.query(`
+        SELECT
+          id, name, origin, category, glass_price, small_price, medium_price, large_price, bottle_price
+        FROM wine
+
+      `);
+      wine = winesResult.rows;
+    } catch (wineError) {
+      console.error(
+        "Error fetching wines (showing menu without wines):",
+        wineError
+      );
+      wine = []; // Default to empty array
+    }
 
     res.render("menu.ejs", {
       food: food.rows,
       drinks: drinks.rows,
+      wine: wine,
     });
   } catch (err) {
     console.error("Error fetching data for menu page:", err);

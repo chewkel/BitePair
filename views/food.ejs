@@ -4,187 +4,52 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link rel="stylesheet" type="text/css" href="/main.css">
   <title>Food Menu</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-    }
-
-    h1 {
-      text-align: center;
-      margin-top: 20px;
-    }
-
-    h2 {
-      margin-top: 40px;
-      text-align: center;
-      font-size: 1.5em;
-    }
-
-    .category-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* Define grid columns */
-      gap: 20px;
-      padding: 20px;
-      justify-content: center;  /* Center the items horizontally */
-      grid-template-rows: auto; /* Ensure rows grow based on content */
-      justify-items: center; /* Align grid items to the center */
-    }
-
-    .food-card {
-      background-color: #fff;
-      border-radius: 8px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-      padding: 15px;
-      width: 250px;
-      text-align: center;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-
-    .food-card:hover {
-      transform: translateY(-10px);
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-    }
-
-    .food-card h3 {
-      font-size: 1.3em;
-      margin-bottom: 10px;
-    }
-
-    .food-card p {
-      margin-bottom: 10px;
-      font-size: 0.9em;
-      color: #555;
-    }
-
-    .price-box {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 10px;
-      margin-top: 10px;
-    }
-
-    .price-box span {
-      display: block;
-      padding: 6px;
-      background-color: #f4f4f4;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-      text-align: center;
-      font-weight: bold;
-    }
-
-    .price-box span:empty {
-      display: none;
-    }
-
-    /* Allergen symbol styles */
-    .allergen-symbol {
-      display: inline-block;
-      width: 24px;
-      height: 24px;
-      text-align: center;
-      line-height: 24px;
-      border-radius: 50%;
-      background-color: #f8d7da;
-      color: #721c24;
-      font-size: 12px;
-      font-weight: bold;
-      margin-right: 5px;
-      position: relative;
-      cursor: pointer;
-    }
-
-    /* Tooltip styling */
-    .allergen-symbol:hover .tooltip {
-      display: block;
-    }
-
-    .tooltip {
-      display: none;
-      position: absolute;
-      top: 30px;
-      left: 50%;
-      transform: translateX(-50%);
-      background-color: #333;
-      color: #fff;
-      padding: 5px 10px;
-      border-radius: 5px;
-      font-size: 12px;
-      white-space: nowrap;
-    }
-
-    /* Responsive grid for smaller screens */
-    @media (max-width: 768px) {
-      .category-container {
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* Smaller items on smaller screens */
-      }
-    }
-    .popup-overlay {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.6);
-      justify-content: center;
-      align-items: center;
-    }
-    
-    .popup-content {
-      background: white;
-      padding: 20px;
-      border-radius: 8px;
-      width: 300px;
-      text-align: center;
-      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
-    }
-    
-    .close-btn {
-      position: absolute;
-      top: 10px;
-      right: 15px;
-      font-size: 20px;
-      cursor: pointer;
-    }
-  </style>
 </head>
 <body>
-  <h1>Food Menu</h1>
+  <header class="menu-header">
+    <h1>Food Menu</h1>
+    <!-- <p>Carefully crafted dishes made with the finest ingredients</p> -->
+  </header>
 
-  <% Object.keys(groupedFood).forEach(category => { %>  <!-- Loop through each category -->
-    <h2><%= category %></h2>
-    <div class="category-container">
-      <% groupedFood[category].forEach(item => { %>  <!-- Loop through items under the category -->
-        <div class="food-card">
-          <h3><%= item.name %></h3>
-          <p><strong>Ingredients:</strong> <%= item.ingredients %></p>
-          
-          <div class="price-box">
-            <span>£<%= item.price %></span>
-          </div>
+  <% Object.keys(groupedFood).forEach(category => { %>
+    <section class="category-section">
+      <div class="category-title">
+        <h2><%= category %></h2>
+      </div>
+      
+      <div class="food-grid">
+        <% groupedFood[category].forEach(item => { %>
+          <article class="food-card">
+            <div class="food-card__content">
+              <h3><%= item.name %></h3>
+              <p class="ingredients"><strong>Ingredients:</strong> <%= item.ingredients %></p>
+              
+              <div class="price">£<%= item.price %></div>
 
-        <p>Allergens: 
-          <% if (item.allergens && item.allergens.length > 0) { %>
-            <% item.allergens.forEach(allergen => { %>
-              <% if (allergen) { %> 
-                <span class="allergen-symbol" data-allergen="<%= allergen %>">
-                  <i class="<%= getAllergenIcon(allergen) %>"></i>
-                </span>
-              <% } %>
-            <% }) %>
-          <% } else { %>
-            None
-          <% } %>
-        </p>
-        </div>
-        
-      <% }) %>
-    </div>
+              <div class="allergens">
+                <span class="allergens-label">Allergens:</span>
+                <% if (item.allergens && item.allergens.length > 0) { %>
+                  <% item.allergens.forEach(allergen => { %>
+                    <% if (allergen) { %> 
+                      <span class="allergen-tag" data-allergen="<%= allergen %>">
+                        <i class="<%= getAllergenIcon(allergen) %>"></i>
+                      </span>
+                    <% } %>
+                  <% }) %>
+                <% } else { %>
+                  <span class="no-allergens">None</span>
+                <% } %>
+              </div>
+            </div>
+          </article>
+        <% }) %>
+      </div>
+    </section>
   <% }) %>
+
+  <!-- Allergen Popup -->
   <div id="allergen-popup" class="popup-overlay">
     <div class="popup-content">
       <span class="close-btn">&times;</span>
@@ -192,41 +57,56 @@
       <p id="allergen-description"></p>
     </div>
   </div>
-</body>
-<script>
-  const allergenDescriptions = {
-    "Dairy": "Contains dairy products such as milk, cheese, and butter. Example: Cheese pizza.",
-    "Eggs": "May contain eggs or egg-based products. Example: Scrambled eggs, mayonnaise.",
-    "Peanuts": "Contains peanuts or peanut-based ingredients. Example: Peanut butter.",
-    "Tree Nuts": "Includes almonds, walnuts, cashews, etc. Example: Almond cake.",
-    "Soy": "Contains soy-based ingredients. Example: Soy sauce, tofu.",
-    "Wheat": "May contain wheat or gluten. Example: Bread, pasta.",
-    "Fish": "Includes fish-based ingredients. Example: Salmon, tuna.",
-    "Shellfish": "May contain shrimp, crab, lobster, etc. Example: Shrimp cocktail.",
-    "Sesame": "Contains sesame seeds or sesame oil. Example: Hummus, sesame bagels.",
-    "Nuts": "May contain nuts or nut-based ingredients. Example: Nutella, almond cake.",
-    "Gluten": "Contains gluten-based ingredients. Example: Bread, pasta.",
-  };
 
-  document.querySelectorAll('.allergen-symbol').forEach(symbol => {
-    symbol.addEventListener('click', function() {
-      const allergenName = this.dataset.allergen;
-      const description = allergenDescriptions[allergenName] || "No description available.";
+  <script>
+    const allergenDescriptions = {
+      "Dairy": "Contains dairy products such as milk, cheese, and butter. Example: Cheese pizza.",
+      "Eggs": "May contain eggs or egg-based products. Example: Scrambled eggs, mayonnaise.",
+      "Peanuts": "Contains peanuts or peanut-based ingredients. Example: Peanut butter.",
+      "Tree Nuts": "Includes almonds, walnuts, cashews, etc. Example: Almond cake.",
+      "Soy": "Contains soy-based ingredients. Example: Soy sauce, tofu.",
+      "Wheat": "May contain wheat or gluten. Example: Bread, pasta.",
+      "Fish": "Includes fish-based ingredients. Example: Salmon, tuna.",
+      "Shellfish": "May contain shrimp, crab, lobster, etc. Example: Shrimp cocktail.",
+      "Sesame": "Contains sesame seeds or sesame oil. Example: Hummus, sesame bagels.",
+      "Nuts": "May contain nuts or nut-based ingredients. Example: Nutella, almond cake.",
+      "Gluten": "Contains gluten-based ingredients. Example: Bread, pasta.",
+    };
 
-      document.getElementById('allergen-title').innerText = allergenName;
-      document.getElementById('allergen-description').innerText = description;
-      document.getElementById('allergen-popup').style.display = "flex";
+    // Allergen popup functionality
+    document.querySelectorAll('.allergen-tag').forEach(tag => {
+      tag.addEventListener('click', function() {
+        const allergenName = this.dataset.allergen;
+        const popup = document.getElementById('allergen-popup');
+        
+        document.getElementById('allergen-title').textContent = allergenName;
+        document.getElementById('allergen-description').textContent = 
+          allergenDescriptions[allergenName] || "No detailed description available.";
+        
+        popup.classList.add('active');
+      });
     });
-  });
 
-  document.querySelector('.close-btn').addEventListener('click', function() {
-    document.getElementById('allergen-popup').style.display = "none";
-  });
+    document.querySelector('.close-btn').addEventListener('click', function() {
+      document.getElementById('allergen-popup').classList.remove('active');
+    });
 
-  window.addEventListener('click', function(event) {
-    if (event.target === document.getElementById('allergen-popup')) {
-      document.getElementById('allergen-popup').style.display = "none";
-    }
-  });
-</script>
+    window.addEventListener('click', function(event) {
+      if (event.target === document.getElementById('allergen-popup')) {
+        document.getElementById('allergen-popup').classList.remove('active');
+      }
+    });
+
+    // Add animation when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+      const cards = document.querySelectorAll('.food-card');
+      cards.forEach((card, index) => {
+        setTimeout(() => {
+          card.style.opacity = '1';
+          card.style.transform = 'translateY(0)';
+        }, 100 * index);
+      });
+    });
+  </script>
+</body>
 </html>
