@@ -3,72 +3,159 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Edit Food & Drinks</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link rel="stylesheet" type="text/css" href="/main.css">
+  <title>Edit Menu Items | BitePair</title>
 </head>
-<body>
-  <h1>Edit Food and Drinks</h1>
+<body class="edit-menu-page">
+  <h1>Edit Menu Items</h1>
 
-  <h2>Food</h2>
-  <ul>
-    <% food.forEach(item => { %>
-    <li>
-      <strong><%= item.name %></strong> - $<%= item.price %> <br>
-      Subcategory: <%= item.subcategory %> <br>
-      Ingredients: <%= item.ingredients %> <br>
-      Allergens: <%= item.allergens && item.allergens.length > 0 ? item.allergens.join(', ') : 'None' %>
-      <form action="editted" method="POST">
-        <input type="hidden" name="id" value="<%= item.id %>">
-        <input type="hidden" name="type_category" value="food">
-        <input type="text" name="name" placeholder="Name" value="<%= item.name %>" required>
-        <input type="number" name="price" placeholder="Price" value="<%= item.price %>" step="0.01" required>
-        <input type="text" name="ingredients" placeholder="Ingredients" value="<%= item.ingredients %>" required>
-        <select name="category" required>
-          <option value="Burgers & Sandwiches" <%= item.category === 'Burgers & Sandwiches' ? 'selected' : '' %>>Burgers & Sandwiches</option>
-          <option value="Sides" <%= item.category === 'Sides' ? 'selected' : '' %>>Sides</option>
-          <option value="Small Plates" <%= item.category === 'Small Plates' ? 'selected' : '' %>>Small Plates</option>
-          <option value="Salads" <%= item.category === 'Salads' ? 'selected' : '' %>>Salads</option>
-          <option value="Nibbles" <%= item.category === 'Nibbles' ? 'selected' : '' %>>Nibbles</option>
-          <option value="To Share" <%= item.category === 'To Share' ? 'selected' : '' %>>To Share</option>
-          <option value="Large Plates" <%= item.category === 'Large Plates' ? 'selected' : '' %>>Large Plates</option>
-          <option avlue="Fries & Tatties" <%= item.category === 'Fries & Tatties' ? 'selected' : '' %>>Fries & Tatties</option>
-          <!-- Add more options as needed -->
-        </select>
-        <button type="submit">Edit</button>
-      </form>
-    </li>
-    <% }) %>
-  </ul>
+  <!-- Food Section -->
+  <h2><i class="fas fa-utensils"></i> Food Items</h2>
+  <% if (food && food.length > 0) { %>
+    <ul>
+      <% food.forEach(item => { %>
+      <li>
+        <div class="item-header">
+          <h3><%= item.name %></h3>
+          <span class="price">£<%= Number(item.price).toFixed(2) %></span>
+        </div>
+        
+        <p class="item-meta">
+          <strong>Subcategory:</strong> <%= item.subcategory || 'Not specified' %>
+        </p>
+        <p class="item-meta">
+          <strong>Ingredients:</strong> <%= item.ingredients || 'Not specified' %>
+        </p>
+        <p class="item-meta">
+          <strong>Allergens:</strong> 
+          <%= item.allergens && item.allergens.length > 0 ? item.allergens.join(', ') : 'None' %>
+        </p>
+        
+        <form action="editted" method="POST">
+          <input type="hidden" name="id" value="<%= item.id %>">
+          <input type="hidden" name="type_category" value="food">
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="name">Name</label>
+              <input type="text" name="name" value="<%= item.name %>" required>
+            </div>
+            
+            <div class="form-group">
+              <label for="price">Price</label>
+              <input type="number" name="price" step="0.01" min="0" 
+                     value="<%= Number(item.price).toFixed(2) %>" required>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="ingredients">Ingredients</label>
+            <input type="text" name="ingredients" value="<%= item.ingredients %>">
+          </div>
+          
+          <div class="form-group">
+            <label for="category">Category</label>
+            <select name="category" required>
+              <% const foodCategories = [
+                "Burgers & Sandwiches", "Sides", "Small Plates", "Salads",
+                "Nibbles", "To Share", "Large Plates", "Fries & Tatties"
+              ]; %>
+              <% foodCategories.forEach(cat => { %>
+                <option value="<%= cat %>" <%= item.category === cat ? 'selected' : '' %>>
+                  <%= cat %>
+                </option>
+              <% }) %>
+            </select>
+          </div>
+          
+          <button type="submit">Update Food Item</button>
+        </form>
+      </li>
+      <% }) %>
+    </ul>
+  <% } else { %>
+    <p class="no-items">No food items found.</p>
+  <% } %>
 
-  <h2>Drinks</h2>
-  <ul>
-    <% drink.forEach(item => { %>
-    <li>
-      <strong><%= item.name %></strong> - $<%= item.price %> <br>
-      Subcategory: <%= item.subcategory %> <br>
-      Ingredients: <%= item.ingredients %> <br>
-      Allergens: <%= item.allergens && item.allergens.length > 0 ? item.allergens.join(', ') : 'None' %>
-      <form action="editted" method="POST">
-        <input type="hidden" name="id" value="<%= item.id %>">
-        <input type="hidden" name="type_category" value="drink">
-        <input type="text" name="name" placeholder="Name" value="<%= item.name %>" required>
-        <input type="number" name="price" placeholder="Price" value="<%= item.price %>" step="0.01" required>
-        <input type="text" name="ingredients" placeholder="Ingredients" value="<%= item.ingredients %>" required>
-        <select name="category" required>
-          <option value="Smoothies" <%= item.category === 'Smoothies' ? 'selected' : '' %>>Smoothies</option>
-          <option value="Classics & Twists" <%= item.category === 'Classics & Twists' ? 'selected' : '' %>>Classics & Twists</option>
-          <option value="Martinis" <%= item.category === 'Martinis' ? 'selected' : '' %>>Martinis</option>
-          <option value="Spritzes" <%= item.category === 'Spritzes' ? 'selected' : '' %>>Spritzes</option>
-          <option value="Bottled beer" <%= item.category === 'Bottled beer' ? 'selected' : '' %>>Bottled beer</option>
-          <option value="Bottled cider" <%= item.category === 'Bottled cider' ? 'selected' : '' %>>Bottled cider</option>
-          <option value="Hot Drinks" <%= item.category === 'Hot Drinks' ? 'selected' : '' %>>Hot Drinks</option>
-          <option value="Fresh juices" <%= item.category === 'Fresh juices' ? 'selected' : '' %>>Fresh juices</option>
-          <option value="Zero-proofs" <%= item.category === 'Zero-proofs' ? 'selected' : '' %>>Zero-proofs</option>
-          <!-- Add more options as needed -->
-        </select>
-        <button type="submit">Edit</button>
-      </form>
-    </li>
-    <% }) %>
-  </ul>
+  <!-- Drinks Section -->
+  <h2><i class="fas fa-glass-whiskey"></i> Drink Items</h2>
+  <% if (drink && drink.length > 0) { %>
+    <ul>
+      <% drink.forEach(item => { %>
+      <li>
+        <div class="item-header">
+          <h3><%= item.name %></h3>
+          <span class="price">£<%= Number(item.price).toFixed(2) %></span>
+        </div>
+        
+        <p class="item-meta">
+          <strong>Subcategory:</strong> <%= item.subcategory || 'Not specified' %>
+        </p>
+        <p class="item-meta">
+          <strong>Ingredients:</strong> <%= item.ingredients || 'Not specified' %>
+        </p>
+        <p class="item-meta">
+          <strong>Allergens:</strong> 
+          <%= item.allergens && item.allergens.length > 0 ? item.allergens.join(', ') : 'None' %>
+        </p>
+        
+        <form action="editted" method="POST">
+          <input type="hidden" name="id" value="<%= item.id %>">
+          <input type="hidden" name="type_category" value="drink">
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="name">Name</label>
+              <input type="text" name="name" value="<%= item.name %>" required>
+            </div>
+            
+            <div class="form-group">
+              <label for="price">Price</label>
+              <input type="number" name="price" step="0.01" min="0" 
+                     value="<%= Number(item.price).toFixed(2) %>" required>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="ingredients">Ingredients</label>
+            <input type="text" name="ingredients" value="<%= item.ingredients %>">
+          </div>
+          
+          <div class="form-group">
+            <label for="category">Category</label>
+            <select name="category" required>
+              <% const drinkCategories = [
+                "Smoothies", "Classics & Twists", "Martinis", "Spritzes",
+                "Bottled beer", "Bottled cider", "Hot Drinks", 
+                "Fresh juices", "Zero-proofs"
+              ]; %>
+              <% drinkCategories.forEach(cat => { %>
+                <option value="<%= cat %>" <%= item.category === cat ? 'selected' : '' %>>
+                  <%= cat %>
+                </option>
+              <% }) %>
+            </select>
+          </div>
+          
+          <button type="submit">Update Drink Item</button>
+        </form>
+      </li>
+      <% }) %>
+    </ul>
+  <% } else { %>
+    <p class="no-items">No drink items found.</p>
+  <% } %>
+
+  <script>
+    // Add confirmation before submitting edits
+    document.querySelectorAll('form').forEach(form => {
+      form.addEventListener('submit', (e) => {
+        if (!confirm('Are you sure you want to update this item?')) {
+          e.preventDefault();
+        }
+      });
+    });
+  </script>
 </body>
 </html>

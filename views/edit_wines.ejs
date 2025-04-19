@@ -3,55 +3,136 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Edit Wine</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link rel="stylesheet" type="text/css" href="/main.css">
+  <title>Edit Wines | BitePair</title>
 </head>
-<body>
-    <h1>Edit Wines</h1>
+<body class="edit-wine-page">
+  <h1><i class="fas fa-wine-bottle"></i> Edit Wines</h1>
 
-    <h2>Wines</h2>
+  <h2><i class="fas fa-list"></i> Wine List</h2>
 
+  <% if (wine && wine.length > 0) { %>
     <ul>
-        <% wine.forEach(wine => { %>
-        <li>
-          <strong><%= wine.name %></strong><br>
-          Origin: <%= wine.origin %> <br>
-          Category: <%= wine.category %> <br>
-          Glass Price: <%= wine.glass_price %> <br>
-          Small Price: <%= wine.small_price %> <br>
-          Medium Price: <%= wine.medium_price %> <br>
-          Large Price: <%= wine.large_price %> <br>
-          Bottle Price: <%= wine.bottle_price %> <br>
+      <% wine.forEach(wine => { %>
+      <li>
+        <div class="wine-info">
+          <div class="wine-name"><%= wine.name %></div>
+          <div class="wine-meta"><strong>Origin:</strong> <%= wine.origin %></div>
+          <div class="wine-meta"><strong>Category:</strong> <%= wine.category %></div>
           
-          <!-- Edit Form -->
-          <form action="edit" method="POST">
-            <input type="hidden" name="category" value="wine">
-            <input type="hidden" name="id" value="<%= wine.id %>"> <!-- Keep the wine ID for updating -->
-            <input type="text" name="name" placeholder="Name" value="<%= wine.name %>" required>
-            <input type="text" name="origin" placeholder="Origin" value="<%= wine.origin %>" required>
+          <div class="price-options">
+            <% if (wine.glass_price) { %>
+              <div class="wine-meta"><strong>Glass:</strong> £<%= Number(wine.glass_price).toFixed(2) %></div>
+            <% } %>
+            <% if (wine.small_price) { %>
+              <div class="wine-meta"><strong>Small:</strong> £<%= Number(wine.small_price).toFixed(2) %></div>
+            <% } %>
+            <% if (wine.medium_price) { %>
+              <div class="wine-meta"><strong>Medium:</strong> £<%= Number(wine.medium_price).toFixed(2) %></div>
+            <% } %>
+            <% if (wine.large_price) { %>
+              <div class="wine-meta"><strong>Large:</strong> £<%= Number(wine.large_price).toFixed(2) %></div>
+            <% } %>
+            <% if (wine.bottle_price) { %>
+              <div class="wine-meta"><strong>Bottle:</strong> £<%= Number(wine.bottle_price).toFixed(2) %></div>
+            <% } %>
+          </div>
+        </div>
 
-            <!-- Category Dropdown -->
-
-            <select id="category" name="category" required>
-              <% const categories = ["White Champagne", "Rose Champagne", "White Wine", "Rose Wine", "Red Wine"]; %>
-              <% categories.forEach(function(category) { %>
-                <option value="<%= category %>" <%= category === wine.category ? 'selected' : '' %>>
-                  <%= category %>
-                </option>
-              <% }); %>
-            </select>
-
-            <!-- Price Fields -->
-            <input type="number" step="0.01" name="glass_price" placeholder="Glass Price" value="<%= wine.glass_price %>">
-            <input type="number" step="0.01" name="small_price" placeholder="Small Price" value="<%= wine.small_price %>">
-            <input type="number" step="0.01" name="medium_price" placeholder="Medium Price" value="<%= wine.medium_price %>">
-            <input type="number" step="0.01" name="large_price" placeholder="Large Price" value="<%= wine.large_price %>">
-            <input type="number" step="0.01" name="bottle_price" placeholder="Bottle Price" value="<%= wine.bottle_price %>">
-
-            <button type="submit">Edit</button>
-          </form>
-        </li>
-        <% }) %>
+        <!-- Edit Form -->
+        <form class="edit-form" action="/menu/wine/edit" method="POST" onsubmit="return confirm('Are you sure you want to update <%= wine.name %>?');">
+          <input type="hidden" name="id" value="<%= wine.id %>">
+          
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="name">Wine Name</label>
+              <input type="text" id="name" name="name" value="<%= wine.name %>" required>
+            </div>
+            
+            <div class="form-group">
+              <label for="origin">Origin</label>
+              <input type="text" id="origin" name="origin" value="<%= wine.origin %>" required>
+            </div>
+            
+            <div class="form-group">
+              <label for="category">Category</label>
+              <select id="category" name="category" required>
+                <% const categories = ["White Champagne", "Rose Champagne", "White Wine", "Rose Wine", "Red Wine", "Sparkling Wine"]; %>
+                <% categories.forEach(function(category) { %>
+                  <option value="<%= category %>" <%= category === wine.category ? 'selected' : '' %>>
+                    <%= category %>
+                  </option>
+                <% }); %>
+              </select>
+            </div>
+          </div>
+          
+          <div class="price-options">
+            <div class="price-option">
+              <label for="glass_price">Glass (£)</label>
+              <input type="number" step="0.01" min="0" name="glass_price" 
+                     value="<%= wine.glass_price %>" placeholder="0.00">
+            </div>
+            
+            <div class="price-option">
+              <label for="small_price">Small (£)</label>
+              <input type="number" step="0.01" min="0" name="small_price" 
+                     value="<%= wine.small_price %>" placeholder="0.00">
+            </div>
+            
+            <div class="price-option">
+              <label for="medium_price">Medium (£)</label>
+              <input type="number" step="0.01" min="0" name="medium_price" 
+                     value="<%= wine.medium_price %>" placeholder="0.00">
+            </div>
+            
+            <div class="price-option">
+              <label for="large_price">Large (£)</label>
+              <input type="number" step="0.01" min="0" name="large_price" 
+                     value="<%= wine.large_price %>" placeholder="0.00">
+            </div>
+            
+            <div class="price-option">
+              <label for="bottle_price">Bottle (£)</label>
+              <input type="number" step="0.01" min="0" name="bottle_price" 
+                     value="<%= wine.bottle_price %>" placeholder="0.00">
+            </div>
+          </div>
+          
+          <button type="submit" class="submit-btn">
+            <i class="fas fa-save"></i> Update Wine
+          </button>
+        </form>
+      </li>
+      <% }) %>
     </ul>
+  <% } else { %>
+    <div class="no-wines">
+      <i class="fas fa-info-circle" style="font-size: 2rem; margin-bottom: 10px;"></i>
+      <p>No wines found to edit.</p>
+    </div>
+  <% } %>
 
+  <script>
+    // Validate at least one price is entered
+    document.querySelectorAll('.edit-form').forEach(form => {
+      form.addEventListener('submit', function(e) {
+        const priceInputs = this.querySelectorAll('input[type="number"]');
+        let hasPrice = false;
+        
+        priceInputs.forEach(input => {
+          if (input.value && parseFloat(input.value) > 0) {
+            hasPrice = true;
+          }
+        });
+        
+        if (!hasPrice) {
+          e.preventDefault();
+          alert('Please enter at least one price option');
+        }
+      });
+    });
+  </script>
 </body>
 </html>

@@ -13,14 +13,6 @@
     box-sizing: border-box;
   }
   
-  body {
-    font-family: var(--font-main);
-    line-height: 1.6;
-    color: var(--dark-color);
-    background-color: #f9f9f9;
-    padding: 20px;
-  }
-  
   /* Header Styles */
   header {
     text-align: center;
@@ -981,3 +973,652 @@
   .combined-menu .menu-header {
     background: linear-gradient(135deg, #6a0dad, #4b0082);
   }
+
+  /* Edit Menu Page Styles */
+.edit-menu-page {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f5f7fa;
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.edit-menu-page h1 {
+  color: #2b2d42;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.edit-menu-page h2 {
+  color: #3a86ff;
+  border-bottom: 2px solid #3a86ff;
+  padding-bottom: 8px;
+  margin-top: 40px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.edit-menu-page ul {
+  list-style: none;
+  padding: 0;
+}
+
+.edit-menu-page li {
+  background: white;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.edit-menu-page form {
+  margin-top: 15px;
+}
+
+.edit-menu-page .form-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.edit-menu-page .form-group {
+  flex: 1;
+  min-width: 200px;
+}
+
+.edit-menu-page label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 500;
+  color: #2b2d42;
+}
+
+.edit-menu-page input, 
+.edit-menu-page select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 16px;
+}
+
+.edit-menu-page button[type="submit"] {
+  background: #3a86ff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.3s;
+}
+
+.edit-menu-page button[type="submit"]:hover {
+  background: #2667cc;
+}
+
+.edit-menu-page .item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.edit-menu-page .item-meta {
+  color: #6c757d;
+  font-size: 0.9rem;
+  margin: 5px 0;
+}
+
+.edit-menu-page .price {
+  font-weight: bold;
+  color: #2b2d42;
+}
+
+.edit-menu-page .no-items {
+  color: #6c757d;
+  font-style: italic;
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  text-align: center;
+}
+
+/* Delete Menu Page Styles */
+.delete-menu-page {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.delete-menu-page h1 {
+  color: #dc3545;
+  text-align: center;
+  margin-bottom: 30px;
+  border-bottom: 2px solid #dc3545;
+  padding-bottom: 10px;
+}
+
+.delete-menu-page h2 {
+  color: #343a40;
+  margin-top: 40px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #dee2e6;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.delete-menu-page ul {
+  list-style: none;
+  padding: 0;
+}
+
+.delete-menu-page li {
+  background: white;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  position: relative;
+}
+
+.delete-menu-page .item-info {
+  margin-bottom: 15px;
+}
+
+.delete-menu-page .item-name {
+  font-weight: bold;
+  font-size: 1.2rem;
+  color: #212529;
+}
+
+.delete-menu-page .item-price {
+  color: #28a745;
+  font-weight: bold;
+}
+
+.delete-menu-page .item-allergens {
+  color: #6c757d;
+  font-size: 0.9rem;
+  margin-top: 5px;
+}
+
+.delete-menu-page form {
+  margin-top: 15px;
+}
+
+.delete-menu-page button[type="submit"] {
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s;
+}
+
+.delete-menu-page button[type="submit"]:hover {
+  background: #c82333;
+}
+
+.delete-menu-page .no-items {
+  color: #6c757d;
+  font-style: italic;
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* Add Wine Page Styles */
+.add-wine-page {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 30px;
+  background-color: #f8f9fa;
+}
+
+.add-wine-page h1 {
+  color: #6a0dad;
+  text-align: center;
+  margin-bottom: 30px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #6a0dad;
+}
+
+.add-wine-page form {
+  background: white;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.add-wine-page label {
+  display: block;
+  margin: 15px 0 8px;
+  font-weight: 500;
+  color: #343a40;
+}
+
+.add-wine-page input,
+.add-wine-page select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  font-size: 16px;
+  margin-bottom: 15px;
+  transition: all 0.3s;
+}
+
+.add-wine-page input:focus,
+.add-wine-page select:focus {
+  border-color: #6a0dad;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(106, 13, 173, 0.2);
+}
+
+.add-wine-page button[type="submit"] {
+  background: #6a0dad;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 20px;
+  width: 100%;
+  transition: all 0.3s;
+}
+
+.add-wine-page button[type="submit"]:hover {
+  background: #5a0b9d;
+  transform: translateY(-2px);
+}
+
+.price-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.price-group {
+  background: #f3e5ff;
+  padding: 15px;
+  border-radius: 8px;
+}
+
+.price-group label {
+  margin-top: 0;
+}
+/* Edit Wine Page Styles */
+.edit-wine-page {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f8f9fa;
+}
+
+.edit-wine-page h1 {
+  color: #6a0dad;
+  text-align: center;
+  margin-bottom: 30px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #6a0dad;
+}
+
+.edit-wine-page h2 {
+  color: #5a0b9d;
+  margin-top: 40px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.edit-wine-page ul {
+  list-style: none;
+  padding: 0;
+}
+
+.edit-wine-page li {
+  background: white;
+  padding: 25px;
+  margin-bottom: 25px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.wine-info {
+  margin-bottom: 20px;
+}
+
+.wine-name {
+  font-size: 1.3rem;
+  color: #343a40;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.wine-meta {
+  color: #6c757d;
+  margin: 5px 0;
+  font-size: 0.95rem;
+}
+
+.wine-meta strong {
+  color: #495057;
+}
+
+.edit-form {
+  margin-top: 20px;
+  border-top: 1px dashed #dee2e6;
+  padding-top: 20px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 500;
+  color: #343a40;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  border-color: #6a0dad;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(106, 13, 173, 0.1);
+}
+
+.price-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.price-option {
+  background: #f3e5ff;
+  padding: 10px;
+  border-radius: 6px;
+}
+
+.price-option label {
+  font-size: 0.9rem;
+}
+
+.submit-btn {
+  background: #6a0dad;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-top: 15px;
+}
+
+.submit-btn:hover {
+  background: #5a0b9d;
+  transform: translateY(-2px);
+}
+
+.no-wines {
+  color: #6c757d;
+  font-style: italic;
+  text-align: center;
+  padding: 30px;
+  background: white;
+  border-radius: 8px;
+}
+/* Add these styles to your existing edit-wine.css */
+.price-option {
+  background: #f3e5ff;
+  padding: 10px;
+  border-radius: 6px;
+  position: relative; /* Add this */
+  overflow: hidden; /* Add this */
+}
+
+.price-option input {
+  width: calc(100% - 20px); /* Adjust width to account for padding */
+  box-sizing: border-box; /* Include padding and border in element's width */
+  margin: 5px 0 0 0; /* Adjust margin */
+  padding: 8px; /* Slightly smaller padding */
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 14px; /* Slightly smaller font */
+}
+
+.price-option label {
+  font-size: 0.8rem; /* Smaller label */
+  display: block;
+  margin-bottom: 2px;
+  color: #5a0b9d;
+  font-weight: 500;
+}
+
+h1 {
+  color: #6a0dad;
+  text-align: center;
+  margin-bottom: 30px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #6a0dad;
+}
+
+.wine-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.wine-item {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease;
+  position: relative;
+}
+
+.wine-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.wine-item h3 {
+  color: #5a0b9d;
+  margin: 0 0 10px 0;
+  font-size: 1.3rem;
+}
+
+.wine-item p {
+  margin: 6px 0;
+  color: #495057;
+}
+
+.wine-item strong {
+  color: #343a40;
+}
+
+.price {
+  font-weight: bold;
+  color: #28a745;
+}
+
+.price-options {
+  margin: 15px 0;
+  padding: 10px 0;
+  border-top: 1px dashed #dee2e6;
+  border-bottom: 1px dashed #dee2e6;
+}
+
+button {
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s;
+  margin-top: 15px;
+}
+
+button:hover {
+  background: #c82333;
+}
+
+@media (max-width: 600px) {
+  .wine-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* login */
+
+
+
+.login-container {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+  padding: 40px;
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+
+.login-container:hover {
+  transform: translateY(-5px);
+}
+
+.login-header {
+  margin-bottom: 30px;
+}
+
+.login-header h1 {
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: var(--primary-color);
+}
+
+.login-header p {
+  color: #6c757d;
+  font-size: 14px;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.input-group {
+  position: relative;
+  text-align: left;
+}
+
+.input-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: var(--dark-color);
+}
+
+.input-group input {
+  width: 100%;
+  padding: 12px 15px 12px 40px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: all 0.3s;
+  background-color: #f8f9fa;
+}
+
+.input-group input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+  background-color: white;
+}
+
+.input-group i {
+  position: absolute;
+  left: 15px;
+  top: 38px;
+  color: #adb5bd;
+}
+
+.login-button {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 14px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-top: 10px;
+}
+
+.login-button:hover {
+  background-color: var(--secondary-color);
+  transform: translateY(-2px);
+}
+
+.login-footer {
+  margin-top: 25px;
+  font-size: 14px;
+  color: #6c757d;
+}
+
+.login-footer a {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.login-footer a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 480px) {
+  .login-container {
+      padding: 30px 20px;
+      margin: 0 15px;
+  }
+}
