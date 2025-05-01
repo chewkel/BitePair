@@ -6,11 +6,174 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <link rel="stylesheet" type="text/css" href="/main.css">
   <title>Food Menu</title>
+  <style>
+    /* Base Styles */
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f9f9f9;
+    }
+
+
+
+    .food-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1rem;
+    }
+
+    .food-card {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      padding: 1.5rem;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .food-card__content h3 {
+      margin-top: 0;
+      color: #222;
+    }
+
+    .ingredients {
+      color: #555;
+      font-size: 0.9rem;
+    }
+
+    .price {
+      font-weight: bold;
+      color: #e63946;
+      margin: 0.5rem 0;
+    }
+
+    .allergens {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    .allergens-label {
+      font-size: 0.9rem;
+      color: #666;
+    }
+
+    .allergen-tag {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      background-color: #f8f8f8;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .allergen-tag:hover {
+      background-color: #e0e0e0;
+    }
+
+    .no-allergens {
+      font-size: 0.9rem;
+      color: #666;
+    }
+
+    /* Popup Styles */
+    .popup-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s, visibility 0.3s;
+      z-index: 1000;
+    }
+
+    .popup-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .popup-content {
+      background: white;
+      padding: 2rem;
+      border-radius: 8px;
+      max-width: 500px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+      position: relative;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #666;
+      background: none;
+      border: none;
+    }
+
+    .close-btn:hover {
+      color: #333;
+    }
+
+    #allergen-title {
+      margin-top: 0;
+      color: #e63946;
+    }
+
+    #allergen-description {
+      margin-bottom: 1.5rem;
+      color: #333;
+    }
+
+    .affected-items {
+      margin-top: 1rem;
+    }
+
+    .affected-items h3 {
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
+      color: #333;
+    }
+
+    .affected-items ul {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .affected-items li {
+      padding: 0.3rem 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    /* Animation */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
 </head>
 <body>
   <header class="menu-header">
     <h1>Food Menu</h1>
-    <!-- <p>Carefully crafted dishes made with the finest ingredients</p> -->
   </header>
 
   <% Object.keys(groupedFood).forEach(category => { %>
@@ -33,7 +196,7 @@
                 <% if (item.allergens && item.allergens.length > 0) { %>
                   <% item.allergens.forEach(allergen => { %>
                     <% if (allergen) { %> 
-                      <span class="allergen-tag" data-allergen="<%= allergen %>">
+                      <span class="allergen-tag" data-allergen="<%= allergen %>" aria-label="<%= allergen %>">
                         <i class="<%= getAllergenIcon(allergen) %>"></i>
                       </span>
                     <% } %>
@@ -52,26 +215,37 @@
   <!-- Allergen Popup -->
   <div id="allergen-popup" class="popup-overlay">
     <div class="popup-content">
-      <span class="close-btn">&times;</span>
+      <span class="close-btn" aria-label="Close popup">&times;</span>
       <h2 id="allergen-title"></h2>
       <p id="allergen-description"></p>
+      <div class="affected-items">
+        <h3>Found in these menu items:</h3>
+        <ul id="affected-items-list"></ul>
+      </div>
     </div>
   </div>
 
   <script>
     const allergenDescriptions = {
-      "Dairy": "Contains dairy products such as milk, cheese, and butter. Example: Cheese pizza.",
-      "Eggs": "May contain eggs or egg-based products. Example: Scrambled eggs, mayonnaise.",
-      "Peanuts": "Contains peanuts or peanut-based ingredients. Example: Peanut butter.",
-      "Tree Nuts": "Includes almonds, walnuts, cashews, etc. Example: Almond cake.",
-      "Soy": "Contains soy-based ingredients. Example: Soy sauce, tofu.",
-      "Wheat": "May contain wheat or gluten. Example: Bread, pasta.",
-      "Fish": "Includes fish-based ingredients. Example: Salmon, tuna.",
-      "Shellfish": "May contain shrimp, crab, lobster, etc. Example: Shrimp cocktail.",
-      "Sesame": "Contains sesame seeds or sesame oil. Example: Hummus, sesame bagels.",
-      "Nuts": "May contain nuts or nut-based ingredients. Example: Nutella, almond cake.",
-      "Gluten": "Contains gluten-based ingredients. Example: Bread, pasta.",
+      "Dairy": "Contains dairy products such as milk, cheese, butter, or cream. Common in cheeses, creamy sauces, and desserts.",
+      "Eggs": "Contains eggs or egg derivatives. Found in mayonnaise, baked goods, and some pastas.",
+      "Peanuts": "Contains peanuts or peanut-based ingredients. Often present in sauces, desserts, or as garnishes.",
+      "Nuts": "Includes almonds, walnuts, cashews, etc. Common in pesto, desserts, and salads.",
+      "Soy": "Contains soy-based ingredients like tofu, soy sauce, or edamame.",
+      "Wheat": "Contains wheat or gluten. Found in bread, pasta, and baked goods.",
+      "Fish": "Includes fish or fish-based ingredients like anchovies or fish sauce.",
+      "Shellfish": "Contains crustaceans or mollusks like shrimp, crab, or oysters.",
+      "Sesame": "Includes sesame seeds or oil. Common in hummus, breads, and dressings.",
+      "Gluten": "Contains gluten from wheat, barley, or rye. Avoid if celiac or gluten-sensitive."
     };
+
+    // Collect all menu items for allergen tracking
+    const menuItems = [];
+    document.querySelectorAll('.food-card').forEach(card => {
+      const name = card.querySelector('h3').textContent;
+      const allergens = Array.from(card.querySelectorAll('.allergen-tag')).map(tag => tag.dataset.allergen);
+      menuItems.push({ name, allergens });
+    });
 
     // Allergen popup functionality
     document.querySelectorAll('.allergen-tag').forEach(tag => {
@@ -79,25 +253,62 @@
         const allergenName = this.dataset.allergen;
         const popup = document.getElementById('allergen-popup');
         
+        // Set title and description
         document.getElementById('allergen-title').textContent = allergenName;
         document.getElementById('allergen-description').textContent = 
           allergenDescriptions[allergenName] || "No detailed description available.";
         
+        // List affected menu items
+        const affectedItemsList = document.getElementById('affected-items-list');
+        affectedItemsList.innerHTML = '';
+        
+        const affectedItems = menuItems.filter(item => 
+          item.allergens.includes(allergenName)
+        );
+        
+        if (affectedItems.length > 0) {
+          affectedItems.forEach(item => {
+            const li = document.createElement('li');
+            li.textContent = item.name;
+            affectedItemsList.appendChild(li);
+          });
+        } else {
+          const li = document.createElement('li');
+          li.textContent = "No items found.";
+          affectedItemsList.appendChild(li);
+        }
+        
+        // Show popup
         popup.classList.add('active');
+        document.body.style.overflow = 'hidden'; // Prevent scrolling
       });
     });
 
+    // Close popup
     document.querySelector('.close-btn').addEventListener('click', function() {
-      document.getElementById('allergen-popup').classList.remove('active');
+      closePopup();
     });
 
+    // Close when clicking outside
     window.addEventListener('click', function(event) {
       if (event.target === document.getElementById('allergen-popup')) {
-        document.getElementById('allergen-popup').classList.remove('active');
+        closePopup();
       }
     });
 
-    // Add animation when page loads
+    // Close with Escape key
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape') {
+        closePopup();
+      }
+    });
+
+    function closePopup() {
+      document.getElementById('allergen-popup').classList.remove('active');
+      document.body.style.overflow = 'auto'; // Re-enable scrolling
+    }
+
+    // Animate cards on load
     document.addEventListener('DOMContentLoaded', function() {
       const cards = document.querySelectorAll('.food-card');
       cards.forEach((card, index) => {
