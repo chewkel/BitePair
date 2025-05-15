@@ -8,6 +8,7 @@
     "express-sanitizer": "^1.0.6",
     "express-session": "^1.18.1",
     "express-validator": "^7.2.1",
+    "openai": "^4.98.0",
     "pg": "^8.15.6",
     "request": "^2.88.2"
   }

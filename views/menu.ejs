@@ -156,25 +156,58 @@
           });
 
           if (response.ok) {
-            // Visual feedback
-            const originalHtml = addBtn.innerHTML;
-            addBtn.innerHTML = '<i class="fas fa-check"></i> Added!';
-            addBtn.style.backgroundColor = '#4CAF50';
-            
-            // Update basket count
-            updateBasketCount();
-            
-            // Reset button after 1.5 seconds
-            setTimeout(() => {
-              addBtn.innerHTML = originalHtml;
-              addBtn.style.backgroundColor = '';
-            }, 1500);
-          }
+          // Visual feedback
+          const originalHtml = addBtn.innerHTML;
+          addBtn.innerHTML = '<i class="fas fa-check"></i> Added!';
+          addBtn.style.backgroundColor = '#4CAF50';
+
+          // Update basket count
+          updateBasketCount();
+
+          // 🔗 AI Pairing Suggestion
+          try {
+              const pairingRes = await fetch("pairing-ai", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ itemName: name }),
+              });
+
+              const pairingData = await pairingRes.json();
+
+              if (pairingData.suggestion) {
+                showPairingPopup(name, pairingData.suggestion);
+              }
+            } catch (err) {
+              console.error("AI pairing fetch failed:", err);
+          } 
+
+          // Reset button after 1.5 seconds
+          setTimeout(() => {
+            addBtn.innerHTML = originalHtml;
+            addBtn.style.backgroundColor = '';
+          }, 1500);
+        }
+
         } catch (error) {
           console.error("Error adding to basket:", error);
         }
       }
     });
+
+    function showPairingPopup(itemName, suggestion) {
+      const popup = document.createElement("div");
+      popup.className = "pairing-popup";
+      popup.innerHTML = `
+        <div class="popup-content">
+          <p>You just picked <strong>${itemName}</strong>.</p>
+          <p>Try pairing it with <strong>${suggestion}</strong>.</p>
+          <button onclick="this.parentElement.parentElement.remove()">Close</button>
+        </div>
+      `;
+      document.body.appendChild(popup);
+    }     
+
+
 
     // Update basket count
     async function updateBasketCount() {

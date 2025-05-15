@@ -2,6 +2,12 @@ const express = require("express");
 const pool = require("../db");
 const { render } = require("ejs");
 const router = express.Router();
+const { OpenAI } = require("openai");
+require("dotenv").config();
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY, // Securely stored in .env
+});
 
 function getAllergenIcon(allergen) {
   const allergenIcons = {
@@ -704,4 +710,54 @@ router.get("/menu", async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 });
+
+async function getAllMenuItems() {
+  const query = `
+    SELECT name FROM food
+    UNION
+    SELECT name FROM drinks
+    UNION
+    SELECT name FROM wine;
+  `;
+
+  const { rows } = await pool.query(query);
+
+  return rows.map(row => row.name);
+}
+
+
+router.post('/pairing-ai', async (req, res) => {
+  try {
+    const { itemName } = req.body;
+    const menuItems = await getAllMenuItems();
+
+    // Construct prompt for AI
+    const prompt = `
+          Here is a list of menu items:
+          ${menuItems.map(item => `"${item}"`).join(", ")}
+
+          Given the selected item: "${itemName}",
+          please suggest exactly one item from the above list that pairs best with it.
+          Respond only with the name of the pairing item.
+          `;
+
+    const aiResponse = await openai.chat.completions.create({
+      model: 'gpt-4o-mini',
+      messages: [{ role: 'user', content: prompt }],
+    });
+
+    let suggestion = aiResponse.choices[0].message.content.trim();
+
+    if (!menuItems.includes(suggestion)) {
+      suggestion = null;
+    }
+
+    res.json({ suggestion });
+
+  } catch (error) {
+    console.error('Pairing AI error:', error);
+    res.status(500).json({ error: 'Failed to get pairing suggestion' });
+  }
+});
+
 module.exports = router;
