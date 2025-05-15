@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="/css/menu.css">
   <title>Add Menu Item | BitePair</title>
   <style>
-    /* Form-specific styles */
+
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background-color: #f5f7fa;
@@ -84,8 +84,6 @@
     .form-group {
       flex: 1;
     }
-    
-    /* Wine-specific fields (initially hidden) */
     .wine-fields {
       display: none;
     }
@@ -161,17 +159,15 @@
   </form>
 
   <script>
-    // Update subcategories and form fields based on category selection
+
     function updateFormFields() {
       const category = document.getElementById("category").value;
       const subcategory = document.getElementById("subcategory");
       const standardFields = document.getElementById("standardFields");
       const wineFields = document.getElementById("wineFields");
       
-      // Reset subcategories
       subcategory.innerHTML = '<option value="">Select a subcategory</option>';
       
-      // Show/hide wine-specific fields
       if (category === 'wines') {
         standardFields.style.display = 'none';
         wineFields.style.display = 'block';
@@ -180,7 +176,6 @@
         wineFields.style.display = 'none';
       }
       
-      // Update subcategories
       if (category) {
         const subcategories = JSON.parse(subcategory.dataset.subcategories);
         const options = subcategories[category] || [];
@@ -194,19 +189,6 @@
       }
     }
 
-    // Initialize form fields on page load
-    //document.addEventListener("DOMContentLoaded", function() {
-      // Make allergens select more user-friendly
-      //const allergenSelect = document.getElementById("allergens");
-      //allergenSelect.size = Math.min(5, allergenSelect.options.length);
-      //allergenSelect.multiple = true;
-      
-      // Initialize subcategories if a category is already selected
-      //const categorySelect = document.getElementById("category");
-      //if (categorySelect.value) {
-        //updateFormFields();
-      //}
-    //});
   </script>
 </body>
 </html>

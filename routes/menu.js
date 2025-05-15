@@ -6,14 +6,14 @@ const { OpenAI } = require("openai");
 require("dotenv").config();
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY, // Securely stored in .env
+  apiKey: process.env.OPENAI_API_KEY,
 });
 
 function getAllergenIcon(allergen) {
   const allergenIcons = {
     Dairy: "fa-solid fa-glass-water",
     Eggs: "fa-solid fa-egg",
-    Peanuts: "fa-solid fa-peanut", // FA6: peanut icon
+    Peanuts: "fa-solid fa-peanut",
     Nuts: "fa-solid fa-seedling",
     Soy: "fa-solid fa-leaf",
     Wheat: "fa-solid fa-bread-slice",
@@ -23,7 +23,7 @@ function getAllergenIcon(allergen) {
     Gluten: "fa-solid fa-bread-slice",
   };
 
-  return allergenIcons[allergen] || "fa-solid fa-question"; // Default icon if not found
+  return allergenIcons[allergen] || "fa-solid fa-question"; 
 }
 
 router.get("/food", async (req, res) => {
@@ -44,7 +44,6 @@ router.get("/food", async (req, res) => {
     `;
     const food = await pool.query(foodQuery);
 
-    // Group food by category
     const groupedFood = food.rows.reduce((acc, item) => {
       const category = item.category || "Uncategorized";
       if (!acc[category]) {
@@ -53,7 +52,7 @@ router.get("/food", async (req, res) => {
       acc[category].push(item);
       return acc;
     }, {});
-    // Pass groupedFood to the template
+  
     res.render("food.ejs", { groupedFood, getAllergenIcon });
   } catch (err) {
     console.error("Error fetching food menu:", err);
@@ -510,7 +509,6 @@ router.get("/add", (req, res) => {
     ],
   };
 
-  // Basic hardcoded allergens
   const allergens = [
     { id: 1, name: "Gluten" },
     { id: 2, name: "Dairy" },
@@ -661,7 +659,6 @@ router.post("/delete", async (req, res) => {
 
 router.get("/menu", async (req, res) => {
   try {
-    // Get food and drinks first (as before)
     const food = await pool.query(`
       SELECT 
         f.id, f.name, f.price, 
@@ -682,7 +679,6 @@ router.get("/menu", async (req, res) => {
       GROUP BY d.id
     `);
 
-    // Try to get wines, but don't fail if the query errors
     let wine = [];
     try {
       const winesResult = await pool.query(`
@@ -697,7 +693,7 @@ router.get("/menu", async (req, res) => {
         "Error fetching wines (showing menu without wines):",
         wineError
       );
-      wine = []; // Default to empty array
+      wine = [];
     }
 
     res.render("menu.ejs", {
@@ -711,53 +707,87 @@ router.get("/menu", async (req, res) => {
   }
 });
 
-async function getAllMenuItems() {
-  const query = `
-    SELECT name FROM food
-    UNION
-    SELECT name FROM drinks
-    UNION
-    SELECT name FROM wine;
-  `;
+async function getMenuItemsCategorized() {
+  const foodQuery = `SELECT id, name, price FROM food`;
+  const drinkQuery = `SELECT id, name, price FROM drinks`;
+  const wineQuery = `SELECT id, name, glass_price, small_price, medium_price, large_price, bottle_price FROM wine`;
 
-  const { rows } = await pool.query(query);
+  const [food, drinks, wine] = await Promise.all([
+    pool.query(foodQuery),
+    pool.query(drinkQuery),
+    pool.query(wineQuery),
+  ]);
 
-  return rows.map(row => row.name);
+  return {
+    food: food.rows,
+    drinks: drinks.rows,
+    wine: wine.rows,
+  };
 }
-
 
 router.post('/pairing-ai', async (req, res) => {
   try {
     const { itemName } = req.body;
-    const menuItems = await getAllMenuItems();
+    const { food, drinks, wine } = await getMenuItemsCategorized();
 
-    // Construct prompt for AI
+    const allItems = [...food, ...drinks, ...wine];
+    const selectedItem = allItems.find(item => item.name === itemName);
+
+    if (!selectedItem) {
+      return res.json({ suggestion: null });
+    }
+
+    const isFood = food.some(f => f.name === itemName);
+    const isDrink = drinks.some(d => d.name === itemName);
+    const isWine = wine.some(w => w.name === itemName);
+
+    let oppositeCategoryItems = [];
+
+    if (isFood) {
+      oppositeCategoryItems = [...drinks, ...wine];
+    } else if (isDrink || isWine) {
+      oppositeCategoryItems = food;
+    } else {
+      return res.json({ suggestion: null });
+    }
+
+    const itemNames = oppositeCategoryItems.map(item => item.name);
+
     const prompt = `
-          Here is a list of menu items:
-          ${menuItems.map(item => `"${item}"`).join(", ")}
+      Here is a list of menu items:
+      ${itemNames.map(n => `"${n}"`).join(", ")}
 
-          Given the selected item: "${itemName}",
-          please suggest exactly one item from the above list that pairs best with it.
-          Respond only with the name of the pairing item.
-          `;
+      Given the selected item: "${itemName}",
+      suggest one single item from the list above that pairs best with it.
+      Respond only with the name of the suggested item.
+    `;
 
     const aiResponse = await openai.chat.completions.create({
       model: 'gpt-4o-mini',
       messages: [{ role: 'user', content: prompt }],
     });
 
-    let suggestion = aiResponse.choices[0].message.content.trim();
+    const suggestionName = aiResponse.choices[0].message.content.trim();
 
-    if (!menuItems.includes(suggestion)) {
-      suggestion = null;
+    const matched = oppositeCategoryItems.find(item => item.name === suggestionName);
+
+    if (!matched) {
+      return res.json({ suggestion: null });
     }
 
-    res.json({ suggestion });
+    return res.json({
+      suggestion: {
+        id: matched.id,
+        name: matched.name,
+        price: matched.price,
+      }
+    });
 
   } catch (error) {
-    console.error('Pairing AI error:', error);
+    console.error("Pairing AI error:", error);
     res.status(500).json({ error: 'Failed to get pairing suggestion' });
   }
 });
+
 
 module.exports = router;

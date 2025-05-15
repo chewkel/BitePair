@@ -10,7 +10,6 @@
 <body>
   <header class="menu-header">
     <h1>Drink Menu</h1>
-    <!-- <p>Handcrafted beverages made with premium ingredients</p> -->
   </header>
 
   <% Object.keys(groupedDrinks).forEach((category, catIndex) => { %>
@@ -52,7 +51,6 @@
   <% }) %>
 
   <script>
-    // Add smooth scroll behavior
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
       anchor.addEventListener('click', function (e) {
         e.preventDefault();
@@ -62,7 +60,6 @@
       });
     });
 
-    // Animate cards when they come into view
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {

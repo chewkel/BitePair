@@ -114,7 +114,7 @@ router.get("/profile", redirectLogin, (req, res) => {
 
 
 router.get("/edit", redirectLogin, async (req, res) => {
-    // edit user, get user data from db
+
     try {
         const user = await pool.query('SELECT * FROM public.users WHERE username = $1', [req.session.userId]);
         // console.log(user.rows);

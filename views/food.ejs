@@ -7,7 +7,6 @@
   <link rel="stylesheet" type="text/css" href="/main.css">
   <title>Food Menu</title>
   <style>
-    /* Base Styles */
     body {
       font-family: 'Arial', sans-serif;
       margin: 0;
@@ -84,7 +83,6 @@
       color: #666;
     }
 
-    /* Popup Styles */
     .popup-overlay {
       position: fixed;
       top: 0;
@@ -164,7 +162,6 @@
       border-bottom: 1px solid #eee;
     }
 
-    /* Animation */
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
@@ -212,7 +209,6 @@
     </section>
   <% }) %>
 
-  <!-- Allergen Popup -->
   <div id="allergen-popup" class="popup-overlay">
     <div class="popup-content">
       <span class="close-btn" aria-label="Close popup">&times;</span>
@@ -239,7 +235,6 @@
       "Gluten": "Contains gluten from wheat, barley, or rye. Avoid if celiac or gluten-sensitive."
     };
 
-    // Collect all menu items for allergen tracking
     const menuItems = [];
     document.querySelectorAll('.food-card').forEach(card => {
       const name = card.querySelector('h3').textContent;
@@ -247,18 +242,15 @@
       menuItems.push({ name, allergens });
     });
 
-    // Allergen popup functionality
     document.querySelectorAll('.allergen-tag').forEach(tag => {
       tag.addEventListener('click', function() {
         const allergenName = this.dataset.allergen;
         const popup = document.getElementById('allergen-popup');
         
-        // Set title and description
         document.getElementById('allergen-title').textContent = allergenName;
         document.getElementById('allergen-description').textContent = 
           allergenDescriptions[allergenName] || "No detailed description available.";
         
-        // List affected menu items
         const affectedItemsList = document.getElementById('affected-items-list');
         affectedItemsList.innerHTML = '';
         
@@ -278,25 +270,21 @@
           affectedItemsList.appendChild(li);
         }
         
-        // Show popup
         popup.classList.add('active');
-        document.body.style.overflow = 'hidden'; // Prevent scrolling
+        document.body.style.overflow = 'hidden'; 
       });
     });
 
-    // Close popup
     document.querySelector('.close-btn').addEventListener('click', function() {
       closePopup();
     });
 
-    // Close when clicking outside
     window.addEventListener('click', function(event) {
       if (event.target === document.getElementById('allergen-popup')) {
         closePopup();
       }
     });
 
-    // Close with Escape key
     document.addEventListener('keydown', function(event) {
       if (event.key === 'Escape') {
         closePopup();
@@ -305,10 +293,9 @@
 
     function closePopup() {
       document.getElementById('allergen-popup').classList.remove('active');
-      document.body.style.overflow = 'auto'; // Re-enable scrolling
+      document.body.style.overflow = 'auto'; 
     }
 
-    // Animate cards on load
     document.addEventListener('DOMContentLoaded', function() {
       const cards = document.querySelectorAll('.food-card');
       cards.forEach((card, index) => {

@@ -10,7 +10,6 @@
 <body class="wine-menu">
   <header class="menu-header">
     <h1>Wine Menu</h1>
-    <!-- <p>Curated selection of fine wines from around the world</p> -->
   </header>
 
   <% Object.keys(winesByCategory).forEach((category, catIndex) => { %>
@@ -67,7 +66,6 @@
   <% }) %>
 
   <script>
-    // Intersection Observer for card animations
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {

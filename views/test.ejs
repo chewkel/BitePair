@@ -101,13 +101,13 @@
             body: JSON.stringify({
               id: itemId,
               category: category,
-              change: isRemove ? 0 : (isPlus ? 1 : -1) // 0 means remove item entirely
+              change: isRemove ? 0 : (isPlus ? 1 : -1) 
             })
           });
 
           const result = await response.json();
           if (result.success) {
-            location.reload(); // Reload the basket page to reflect updated data
+            location.reload(); 
           } else {
             alert(result.message);
           }

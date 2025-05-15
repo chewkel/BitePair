@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Food & Drinks</title>
   <style>
-    /* Style for allergen symbols */
 
     .allergen-symbol {
       display: inline-block;
@@ -23,7 +22,6 @@
       cursor: pointer;
     }
 
-    /* Tooltip styling */
     .allergen-symbol:hover .tooltip {
       display: block;
     }
@@ -55,9 +53,9 @@
       Allergens: 
       <% if (item.allergen && item.allergen.length > 0) { %>
         <% item.allergen.forEach(allergen => { %>
-          <% if (allergen) { %> <!-- Check if allergen is valid -->
+          <% if (allergen) { %> 
             <span class="allergen-symbol">
-              <%= allergen[0].toUpperCase() %> <!-- First letter of allergen -->
+              <%= allergen[0].toUpperCase() %> 
               <span class="tooltip"><%= allergen %></span>
             </span>
           <% } %>
@@ -78,9 +76,9 @@
       Allergens: 
       <% if (item.allergen && item.allergen.length > 0) { %>
         <% item.allergen.forEach(allergen => { %>
-          <% if (allergen) { %> <!-- Check if allergen is valid -->
+          <% if (allergen) { %> 
             <span class="allergen-symbol">
-              <%= allergen[0].toUpperCase() %> <!-- First letter of allergen -->
+              <%= allergen[0].toUpperCase() %> 
               <span class="tooltip"><%= allergen %></span>
             </span>
           <% } %>
