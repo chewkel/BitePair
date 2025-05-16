@@ -5,10 +5,12 @@ const router = express.Router();
 const { OpenAI } = require("openai");
 require("dotenv").config();
 
+// Initialize OpenAI client
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+// Function to get the icon class for a given allergen
 function getAllergenIcon(allergen) {
   const allergenIcons = {
     Dairy: "fa-solid fa-glass-water",
@@ -23,9 +25,10 @@ function getAllergenIcon(allergen) {
     Gluten: "fa-solid fa-bread-slice",
   };
 
-  return allergenIcons[allergen] || "fa-solid fa-question"; 
+  return allergenIcons[allergen] || "fa-solid fa-question";
 }
 
+// GET request to fetch food menu
 router.get("/food", async (req, res) => {
   try {
     const foodQuery = `
@@ -52,7 +55,7 @@ router.get("/food", async (req, res) => {
       acc[category].push(item);
       return acc;
     }, {});
-  
+
     res.render("food.ejs", { groupedFood, getAllergenIcon });
   } catch (err) {
     console.error("Error fetching food menu:", err);
@@ -60,6 +63,7 @@ router.get("/food", async (req, res) => {
   }
 });
 
+// json view for food menu
 router.get("/foodtest", async (req, res) => {
   try {
     const result = await pool.query(
@@ -77,6 +81,7 @@ router.get("/foodtest", async (req, res) => {
   }
 });
 
+// json view for drinks menu
 router.get("/drinkstest", async (req, res) => {
   try {
     const result = await pool.query(
@@ -94,6 +99,7 @@ router.get("/drinkstest", async (req, res) => {
   }
 });
 
+// json view for wine menu
 router.get("/winetest", async (req, res) => {
   try {
     const result = await pool.query(
@@ -107,6 +113,7 @@ router.get("/winetest", async (req, res) => {
   }
 });
 
+// GET request to fetch drinks menu
 router.get("/drinks", async (req, res) => {
   try {
     const drinksQuery = `SELECT
@@ -140,6 +147,7 @@ router.get("/drinks", async (req, res) => {
   }
 });
 
+// GET request to fetch wine menu
 router.get("/wines", async (req, res) => {
   try {
     const query = `
@@ -173,10 +181,12 @@ router.get("/wines", async (req, res) => {
   }
 });
 
+// GET request to render the add wine page
 router.get("/wine/add", (req, res) => {
   res.render("add_wines.ejs");
 });
 
+// POST request to add a new wine
 router.post("/wine/add", async (req, res) => {
   const {
     name,
@@ -213,6 +223,7 @@ router.post("/wine/add", async (req, res) => {
   }
 });
 
+// GET request to render the edit wine page
 router.get("/wine/edit", async (req, res) => {
   try {
     const winequery = `
@@ -228,6 +239,7 @@ router.get("/wine/edit", async (req, res) => {
   }
 });
 
+// POST request to update a wine
 router.post("/wine/edit", async (req, res) => {
   const {
     id,
@@ -288,6 +300,7 @@ router.post("/wine/edit", async (req, res) => {
   }
 });
 
+// GET request to render the delete wine page
 router.get("/wine/delete", async (req, res) => {
   try {
     const winequery = `
@@ -303,6 +316,7 @@ router.get("/wine/delete", async (req, res) => {
   }
 });
 
+// POST request to delete a wine
 router.post("/wine/delete", async (req, res) => {
   const { id } = req.body;
 
@@ -327,6 +341,7 @@ router.post("/wine/delete", async (req, res) => {
   }
 });
 
+// GET request to fetch all menu items
 router.get("/lists", async (req, res) => {
   try {
     const foodQuery = `
@@ -364,7 +379,7 @@ router.get("/lists", async (req, res) => {
       wine: wine.rows,
     });
 
-    // console.log(food.rows);
+    // console.log(food.rows); // Debugging line as previously was getting undefined from moving data across pages
     // console.log(drink.rows);
   } catch (err) {
     console.error("Error fetching data for lists page:", err);
@@ -372,6 +387,7 @@ router.get("/lists", async (req, res) => {
   }
 });
 
+// GET request to render the edit menu page
 router.get("/edit", async (req, res) => {
   try {
     const foodQuery = `
@@ -409,6 +425,7 @@ router.get("/edit", async (req, res) => {
   }
 });
 
+// POST request to update a menu item
 router.post("/editted", async (req, res) => {
   console.log(req.body);
   const { id, type_category, name, price, ingredients, category } = req.body;
@@ -484,6 +501,7 @@ router.post("/editted", async (req, res) => {
   }
 });
 
+// GET request to render the add menu page
 router.get("/add", (req, res) => {
   const subcategories = {
     food: [
@@ -523,6 +541,7 @@ router.get("/add", (req, res) => {
   });
 });
 
+// POST request to add a new menu item
 router.post("/added", async (req, res) => {
   const { category, subcategory, name, price, ingredients } = req.body;
 
@@ -594,6 +613,7 @@ router.post("/added", async (req, res) => {
   }
 });
 
+// GET request to render the delete menu page
 router.get("/delete", async (req, res) => {
   try {
     const food = await pool.query(`
@@ -626,6 +646,7 @@ router.get("/delete", async (req, res) => {
   }
 });
 
+// POST request to delete a menu item
 router.post("/delete", async (req, res) => {
   const { category, id } = req.body;
 
@@ -657,6 +678,7 @@ router.post("/delete", async (req, res) => {
   }
 });
 
+// GET request to fetch the menu page
 router.get("/menu", async (req, res) => {
   try {
     const food = await pool.query(`
@@ -707,6 +729,9 @@ router.get("/menu", async (req, res) => {
   }
 });
 
+// the pairing AI endpoint 
+
+// having the food, drinks and wine in rows for the AI to use
 async function getMenuItemsCategorized() {
   const foodQuery = `SELECT id, name, price FROM food`;
   const drinkQuery = `SELECT id, name, price FROM drinks`;
@@ -725,6 +750,7 @@ async function getMenuItemsCategorized() {
   };
 }
 
+// POST request to get pairing suggestion with AI
 router.post('/pairing-ai', async (req, res) => {
   try {
     const { itemName } = req.body;

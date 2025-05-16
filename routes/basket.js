@@ -3,6 +3,7 @@ const pool = require("../db");
 const { render } = require("ejs");
 const router = express.Router();
 
+// This shows the basket page
 router.get("/", (req, res) => {
   const basket = req.session.basket || [];
   const total = basket.reduce(
@@ -13,6 +14,7 @@ router.get("/", (req, res) => {
   res.render("basket", { basket, total });
 });
 
+// Post request to add an item to the basket
 router.post("/add", (req, res) => {
   const { id, name, price } = req.body;
 
@@ -31,6 +33,7 @@ router.post("/add", (req, res) => {
   res.json({ success: true, basket: req.session.basket });
 });
 
+// Post request to update the quantity of an item in the basket
 router.post("/update", (req, res) => {
   const { id, change } = req.body;
   if (!req.session.basket) req.session.basket = [];
@@ -47,6 +50,7 @@ router.post("/update", (req, res) => {
   }
 });
 
+// Post request to remove an item from the basket
 router.post("/remove", (req, res) => {
   const { id } = req.body;
   req.session.basket = req.session.basket.filter((item) => item.id !== id);
