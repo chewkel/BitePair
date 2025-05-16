@@ -32,8 +32,7 @@
                   <% item.allergens.forEach(allergen => { %>
                     <% if (allergen) { %>
                       <span class="allergen-tag" data-allergen="<%= allergen %>">
-                        <%= allergen[0].toUpperCase() %>
-                        <span class="tooltip"><%= allergen %></span>
+                        <i class="<%= getAllergenIcon(allergen) %>"></i>
                       </span>
                     <% } %>
                   <% }) %>
@@ -178,7 +177,33 @@
     </a>
   </div>
 
+  <div id="allergen-popup" class="popup-overlay">
+    <div class="popup-content">
+      <span class="close-btn" aria-label="Close popup">&times;</span>
+      <h2 id="allergen-title"></h2>
+      <p id="allergen-description"></p>
+      <div class="affected-items">
+        <h3>Found in these menu items:</h3>
+        <ul id="affected-items-list"></ul>
+      </div>
+    </div>
+  </div>
+
   <script>
+
+      const allergenDescriptions = {
+      "Dairy": "Contains dairy products such as milk, cheese, butter, or cream. Common in cheeses, creamy sauces, and desserts.",
+      "Eggs": "Contains eggs or egg derivatives. Found in mayonnaise, baked goods, and some pastas.",
+      "Peanuts": "Contains peanuts or peanut-based ingredients. Often present in sauces, desserts, or as garnishes.",
+      "Nuts": "Includes almonds, walnuts, cashews, etc. Common in pesto, desserts, and salads.",
+      "Soy": "Contains soy-based ingredients like tofu, soy sauce, or edamame.",
+      "Wheat": "Contains wheat or gluten. Found in bread, pasta, and baked goods.",
+      "Fish": "Includes fish or fish-based ingredients like anchovies or fish sauce.",
+      "Shellfish": "Contains crustaceans or mollusks like shrimp, crab, or oysters.",
+      "Sesame": "Includes sesame seeds or oil. Common in hummus, breads, and dressings.",
+      "Gluten": "Contains gluten from wheat, barley, or rye. Avoid if celiac or gluten-sensitive."
+    };
+
     document.addEventListener("click", async (e) => {
       const addBtn = e.target.closest(".add-btn");
       if (addBtn) {

@@ -722,6 +722,7 @@ router.get("/menu", async (req, res) => {
       food: food.rows,
       drinks: drinks.rows,
       wine: wine,
+      getAllergenIcon,
     });
   } catch (err) {
     console.error("Error fetching data for menu page:", err);
