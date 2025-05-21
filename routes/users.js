@@ -125,7 +125,7 @@ router.get("/edit", redirectLogin, async (req, res) => {
     }
 });
 
-router.post("/editted", redirectLogin, async (req, res) => {
+router.post("/edited", redirectLogin, async (req, res) => {
     let username = req.sanitize(req.body.username);
     let email = req.sanitize(req.body.email);
     let password = req.sanitize(req.body.password);

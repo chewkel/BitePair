@@ -426,7 +426,7 @@ router.get("/edit", async (req, res) => {
 });
 
 // POST request to update a menu item
-router.post("/editted", async (req, res) => {
+router.post("/edited", async (req, res) => {
   console.log(req.body);
   const { id, type_category, name, price, ingredients, category } = req.body;
 

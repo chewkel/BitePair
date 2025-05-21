@@ -29,7 +29,7 @@
           <%= item.allergens && item.allergens.length > 0 ? item.allergens.join(', ') : 'None' %>
         </p>
         
-        <form action="editted" method="POST">
+        <form action="edited" method="POST">
           <input type="hidden" name="id" value="<%= item.id %>">
           <input type="hidden" name="type_category" value="food">
           
